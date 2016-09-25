@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public class Class1
+    public abstract class PartAdornment : GuiBase3d
     {
+        public BasePart Adornee { get; set; }
     }
 }
