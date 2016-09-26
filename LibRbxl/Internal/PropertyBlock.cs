@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LibRbxl.Internal
 {
-    internal class PropertyBlock
+    internal abstract class PropertyBlock
     {
         public string Name { get; set; }
         public PropertyType PropertyType { get; set; }
@@ -105,7 +105,9 @@ namespace LibRbxl.Internal
                     return new PropertyBlock<Vector3>(name, dataType, typeId, values);
                 }
                 case PropertyType.CFrame: // TODO
-                    break;
+                {
+                    throw new NotImplementedException();
+                }
                 case PropertyType.Enumeration:
                 {
                     var values = Util.ReadEnumerationArray(reader, typeHeader.InstanceCount);
@@ -119,9 +121,9 @@ namespace LibRbxl.Internal
                 default:
                     throw new InvalidRobloxFileException("Unknown property data type");
             }
-
-            throw new NotImplementedException();
         }
+
+        public abstract Property GetProperty(int index);
     }
 
     internal class PropertyBlock<T> : PropertyBlock
@@ -131,6 +133,11 @@ namespace LibRbxl.Internal
         public PropertyBlock(string name, PropertyType propertyType, int typeId, T[] values) : base(name, propertyType, typeId)
         {
             Values = values;
+        }
+
+        public override Property GetProperty(int index)
+        {
+            return PropertyFactory.Create(Name, PropertyType, Values[index]);
         }
     }
 }

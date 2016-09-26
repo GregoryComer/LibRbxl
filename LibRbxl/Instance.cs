@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,82 @@ namespace LibRbxl
 {
     public abstract class Instance : RobloxObject
     {
+        private Instance _parent;
         public bool Archivable { get; set; }
 
         public abstract string ClassName { get; }
 
         public string Name { get; set; }
 
-        public Instance Parent { get; set; }
+        [RobloxIgnore]
+        public Instance Parent
+        {
+            get { return _parent; }
+            set
+            {
+                _parent = value;
+                if (!_parent.Children.Contains(this))
+                    _parent.Children.Add(this);
+            }
+        }
+
+        [RobloxIgnore]
+        public ChildCollection Children { get; }
+
+        [RobloxIgnore]
+        public int Referent { get; set; }
+
+        protected Instance()
+        {
+            Children = new ChildCollection(this);
+        }
+    }
+
+    public class ChildCollection : IEnumerable<Instance>
+    {
+        private readonly List<Instance> _children;
+        private readonly Instance _owner;
+
+        public ChildCollection(Instance owner)
+        {
+            _children = new List<Instance>();
+            _owner = owner;
+        }
+
+        public ChildCollection(IEnumerable<Instance> children, Instance owner)
+        {
+            _children = new List<Instance>();
+            _owner = owner;
+
+            foreach (var child in children)
+                Add(child);
+        }
+
+        public void Add(Instance child)
+        {
+            child.Parent = _owner;
+            _children.Add(child);
+        }
+
+        public bool Contains(Instance child)
+        {
+            return _children.Contains(child);
+        }
+
+        public void Remove(Instance child)
+        {
+            _children.Remove(child);
+        }
+
+        public IEnumerator<Instance> GetEnumerator()
+        {
+            return _children.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
 

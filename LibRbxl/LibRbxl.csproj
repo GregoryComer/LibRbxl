@@ -100,7 +100,9 @@
     <Compile Include="Font.cs" />
     <Compile Include="FontSize.cs" />
     <Compile Include="Hole.cs" />
-    <Compile Include="Internal\Constants.cs" />
+    <Compile Include="InstanceFactory.cs" />
+    <Compile Include="Internal\PropertyFactory.cs" />
+    <Compile Include="Internal\Signatures.cs" />
     <Compile Include="Internal\PropertyBlock.cs" />
     <Compile Include="Internal\TypeHeader.cs" />
     <Compile Include="Internal\Util.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="PriorityMethod.cs" />
     <Compile Include="PVAdornment.cs" />
     <Compile Include="ReverbType.cs" />
+    <Compile Include="RobloxTypeAttribute.cs" />
     <Compile Include="RotateP.cs" />
     <Compile Include="ColorSequence.cs" />
     <Compile Include="DynamicRotate.cs" />

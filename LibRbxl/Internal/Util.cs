@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Permissions;
 using System.Text;
@@ -119,6 +120,27 @@ namespace LibRbxl.Internal
             var stringLength = reader.ReadInt32();
             var stringBytes = reader.ReadBytes(stringLength);
             return RobloxEncoding.GetString(stringBytes);
+        }
+
+        public static Tuple<int, int>[] ReadParentData(byte[] data) // Tuple format is (Child, Parent)
+        {
+            var stream = new MemoryStream(data);
+            var reader = new EndianAwareBinaryReader(stream);
+            return ReadParentData(reader);
+        }
+
+        public static Tuple<int, int>[] ReadParentData(EndianAwareBinaryReader reader) // Tuple format is (Child, Parent)
+        {
+            reader.ReadByte(); // Reserved
+            var entryCount = reader.ReadInt32();
+
+            var childReferents = ReadReferentArray(reader, entryCount);
+            var parentReferents = ReadReferentArray(reader, entryCount);
+
+            var pairs = new Tuple<int,int>[entryCount];
+            for (var i = 0; i < entryCount; i++)
+                pairs[i] = new Tuple<int, int>(childReferents[i], parentReferents[i]);
+            return pairs;
         }
 
         public static Ray[] ReadRayArray(EndianAwareBinaryReader reader, int count)
