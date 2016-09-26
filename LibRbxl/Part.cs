@@ -8,14 +8,8 @@ namespace LibRbxl
 {
     public class Part : BasePart
     {
+        public override string ClassName => "Part";
+
         public PartType PartType { get; set; }
-
-        public Part() : base("Part")
-        {
-        }
-
-        public Part(string className) : base(className)
-        {
-        }
     }
 }

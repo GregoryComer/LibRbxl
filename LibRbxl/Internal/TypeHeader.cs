@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LibRbxl.Internal
+{
+    internal class TypeHeader
+    {
+        public int TypeId { get; set; }
+        public string Name { get; set; }
+        public int[] Referents { get; set; }
+        public byte[] AdditionalData { get; set; }
+
+        public int InstanceCount => Referents.Length;
+
+        public TypeHeader(string name, int typeId, int[] referents, byte[] additionalData = null)
+        {
+            TypeId = typeId;
+            Name = name;
+            Referents = referents;
+            AdditionalData = additionalData;
+        }
+
+        public static TypeHeader Deserialize(byte[] data)
+        {
+            return Deserialize(new EndianAwareBinaryReader(new MemoryStream(data) ));
+        }
+
+        public static TypeHeader Deserialize(EndianAwareBinaryReader reader)
+        {
+            var typeId = reader.ReadInt32();
+            var typeName = Util.ReadLengthPrefixedString(reader);
+            var containsExtraDataByte = reader.ReadByte();
+            var instanceCount = reader.ReadInt32();
+            var referentArray = Util.ReverseTransformInt32Array(reader.ReadBytes(instanceCount*sizeof (int)));
+            var extraData = (containsExtraDataByte != 0) ? reader.ReadBytes(instanceCount) : null;
+            
+            return new TypeHeader(typeName, typeId, referentArray, extraData);
+        }
+
+        public static byte[] Serialize(TypeHeader value)
+        {
+            var stream = new MemoryStream();
+            var writer = new EndianAwareBinaryWriter(stream);
+
+            Serialize(writer, value);
+
+            return stream.GetBuffer().Take((int) stream.Length).ToArray();
+        }
+
+        public static void Serialize(EndianAwareBinaryWriter writer, TypeHeader value)
+        {
+            writer.WriteInt32(value.TypeId);
+            Util.WriteLengthPrefixedString(writer, value.Name);
+            writer.WriteByte((byte) (value.AdditionalData != null ? 1 : 0));
+            writer.WriteInt32(value.InstanceCount);
+            writer.WriteBytes(Util.TransformInt32Array(value.Referents));
+            if (value.AdditionalData != null)
+                writer.WriteBytes(value.AdditionalData);
+        }
+    }
+}

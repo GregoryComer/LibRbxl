@@ -30,8 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
+      <HintPath>..\packages\lz4net.1.0.10.93\lib\net4-client\LZ4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,6 +62,7 @@
     <Compile Include="BadgeService.cs" />
     <Compile Include="BallSocketConstraint.cs" />
     <Compile Include="BasePart.cs" />
+    <Compile Include="BasePlayerGui.cs" />
     <Compile Include="BaseScript.cs" />
     <Compile Include="BevelMesh.cs" />
     <Compile Include="BillboardGui.cs" />
@@ -86,7 +93,27 @@
     <Compile Include="ChangeHistoryService.cs" />
     <Compile Include="CharacterAppearance.cs" />
     <Compile Include="CharacterMesh.cs" />
+    <Compile Include="ConcurrencyModel.cs" />
+    <Compile Include="EndianAwareBinaryReader.cs" />
+    <Compile Include="EndianAwareBinaryWriter.cs" />
+    <Compile Include="EndianAwareBitConverter.cs" />
+    <Compile Include="Font.cs" />
+    <Compile Include="FontSize.cs" />
+    <Compile Include="Hole.cs" />
+    <Compile Include="Internal\Constants.cs" />
+    <Compile Include="Internal\PropertyBlock.cs" />
+    <Compile Include="Internal\TypeHeader.cs" />
+    <Compile Include="Internal\Util.cs" />
+    <Compile Include="InvalidRobloxFileException.cs" />
+    <Compile Include="RobloxLZ4.cs" />
+    <Compile Include="MeshType.cs" />
+    <Compile Include="MouseBehavior.cs" />
+    <Compile Include="PriorityMethod.cs" />
+    <Compile Include="PVAdornment.cs" />
+    <Compile Include="ReverbType.cs" />
+    <Compile Include="RotateP.cs" />
     <Compile Include="ColorSequence.cs" />
+    <Compile Include="DynamicRotate.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="DoubleConstrainedValue.cs" />
     <Compile Include="ClickDetector.cs" />
@@ -159,6 +186,7 @@
     <Compile Include="KeyFrame.cs" />
     <Compile Include="LayerCollector.cs" />
     <Compile Include="LeftRight.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="Lighting.cs" />
     <Compile Include="LocalScript.cs" />
     <Compile Include="LogService.cs" />
@@ -179,6 +207,8 @@
     <Compile Include="NetworkServer.cs" />
     <Compile Include="NormalId.cs" />
     <Compile Include="NumberRange.cs" />
+    <Compile Include="NumberSequence.cs" />
+    <Compile Include="NumberSequenceKeypoint.cs" />
     <Compile Include="NumberValue.cs" />
     <Compile Include="ObjectValue.cs" />
     <Compile Include="OrderedDataStore.cs" />
@@ -187,12 +217,31 @@
     <Compile Include="PartAdornment.cs" />
     <Compile Include="ParticleEmitter.cs" />
     <Compile Include="PartType.cs" />
+    <Compile Include="Platform.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="PlayerGui.cs" />
+    <Compile Include="Players.cs" />
+    <Compile Include="PlayerScripts.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="PluginManager.cs" />
+    <Compile Include="PluginMouse.cs" />
+    <Compile Include="PointLight.cs" />
+    <Compile Include="PointsService.cs" />
+    <Compile Include="Pose.cs" />
+    <Compile Include="PoseEasingDirection.cs" />
+    <Compile Include="PoseEasingStyle.cs" />
     <Compile Include="PostEffect.cs" />
+    <Compile Include="PrismaticConstraint.cs" />
+    <Compile Include="ProfilingItem.cs" />
     <Compile Include="PVInstance.cs" />
     <Compile Include="Ray.cs" />
+    <Compile Include="RayValue.cs" />
     <Compile Include="Rect.cs" />
     <Compile Include="Region3int16.cs" />
+    <Compile Include="RemoteEvent.cs" />
+    <Compile Include="RemoteFunction.cs" />
+    <Compile Include="ReplicatedFirst.cs" />
+    <Compile Include="ReplicatedStorage.cs" />
     <Compile Include="RobloxIgnoreAttribute.cs" />
     <Compile Include="RobloxSerializer.cs" />
     <Compile Include="ReferentProvider.cs" />
@@ -215,20 +264,70 @@
     <Compile Include="RayProperty.cs" />
     <Compile Include="ReferentProperty.cs" />
     <Compile Include="RobloxPropertyAttribute.cs" />
+    <Compile Include="RocketPropulsion.cs" />
+    <Compile Include="RodConstraint.cs" />
+    <Compile Include="RopeConstraint.cs" />
+    <Compile Include="RotateV.cs" />
     <Compile Include="ScaleType.cs" />
+    <Compile Include="ScreenGui.cs" />
     <Compile Include="Script.cs" />
+    <Compile Include="ScriptContext.cs" />
+    <Compile Include="ScrollingFrame.cs" />
     <Compile Include="SeatBase.cs" />
+    <Compile Include="Selection.cs" />
+    <Compile Include="SelectionBox.cs" />
+    <Compile Include="SelectionSphere.cs" />
+    <Compile Include="ServerScriptStorage.cs" />
+    <Compile Include="ServerStorage.cs" />
     <Compile Include="ServiceProvider.cs" />
+    <Compile Include="Shirt.cs" />
+    <Compile Include="ShirtGraphic.cs" />
     <Compile Include="SizeConstraint.cs" />
+    <Compile Include="Sky.cs" />
+    <Compile Include="SleepAdjustMethod.cs" />
+    <Compile Include="SlidingBallConstraint.cs" />
+    <Compile Include="Smoke.cs" />
+    <Compile Include="Snap.cs" />
+    <Compile Include="Sound.cs" />
+    <Compile Include="SoundService.cs" />
+    <Compile Include="Sparkles.cs" />
     <Compile Include="SpawnLocation.cs" />
+    <Compile Include="SpecialMesh.cs" />
+    <Compile Include="SpotLight.cs" />
+    <Compile Include="SpringConstraint.cs" />
+    <Compile Include="StarterCharacterScripts.cs" />
+    <Compile Include="StarterGui.cs" />
+    <Compile Include="StarterPack.cs" />
+    <Compile Include="StarterPlayer.cs" />
+    <Compile Include="StarterPlayerScripts.cs" />
+    <Compile Include="StatsItem.cs" />
     <Compile Include="StringProperty.cs" />
+    <Compile Include="StringValue.cs" />
+    <Compile Include="SunRaysEffect.cs" />
+    <Compile Include="SurfaceGui.cs" />
+    <Compile Include="SurfaceLight.cs" />
+    <Compile Include="SurfaceSelection.cs" />
     <Compile Include="SurfaceType.cs" />
+    <Compile Include="TaskScheduler.cs" />
     <Compile Include="Team.cs" />
+    <Compile Include="Teams.cs" />
+    <Compile Include="TeleportService.cs" />
     <Compile Include="Terrain.cs" />
+    <Compile Include="TerrainRegion.cs" />
+    <Compile Include="TestService.cs" />
+    <Compile Include="TextBox.cs" />
+    <Compile Include="TextButton.cs" />
+    <Compile Include="TextLabel.cs" />
+    <Compile Include="Texture.cs" />
+    <Compile Include="TextXAlignment.cs" />
+    <Compile Include="TextYAlignment.cs" />
+    <Compile Include="ThreadPoolConfig.cs" />
+    <Compile Include="Tool.cs" />
     <Compile Include="TopBottom.cs" />
     <Compile Include="TrussPart.cs" />
     <Compile Include="TrussStyle.cs" />
     <Compile Include="UDim2Property.cs" />
+    <Compile Include="UserInputService.cs" />
     <Compile Include="UserInputState.cs" />
     <Compile Include="UserInputType.cs" />
     <Compile Include="Vector2Property.cs" />
@@ -238,9 +337,15 @@
     <Compile Include="UDim2.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector3.cs" />
+    <Compile Include="Vector3Value.cs" />
     <Compile Include="VehicleSeat.cs" />
+    <Compile Include="VelocityMotor.cs" />
     <Compile Include="WedgePart.cs" />
+    <Compile Include="Weld.cs" />
     <Compile Include="Workspace.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

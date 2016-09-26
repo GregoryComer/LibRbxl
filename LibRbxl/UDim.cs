@@ -8,10 +8,10 @@ namespace LibRbxl
 {
     public struct UDim
     {
-        public float Offset { get; }
+        public int Offset { get; }
         public float Scale { get; }
 
-        public UDim(float offset, float scale)
+        public UDim(int offset, float scale)
         {
             Offset = offset;
             Scale = scale;

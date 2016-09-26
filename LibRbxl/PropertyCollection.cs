@@ -60,7 +60,12 @@ namespace LibRbxl
             _properties.Remove(property.Name);
         }
 
-        IEnumerator<Property> IEnumerable<Property>.GetEnumerator()
+        public IEnumerator<Property> GetEnumerator()
+        {
+            return _properties.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return _properties.Values.GetEnumerator();
         }

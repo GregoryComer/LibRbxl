@@ -13,7 +13,7 @@ namespace LibRbxl
 
         public Ray Unit => new Ray(Direction, Origin.Unit);
 
-        public Ray(Vector3 direction, Vector3 origin)
+        public Ray(Vector3 origin, Vector3 direction)
         {
             Direction = direction;
             Origin = origin;
