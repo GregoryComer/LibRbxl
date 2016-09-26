@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public class PointLight : Light
     {
-        public string TextureId { get; set; }
+        public override string ClassName => "PointLight";
+
+        public float Range { get; set; }
     }
 }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public class LogService : Instance
     {
-        public string TextureId { get; set; }
+        public override string ClassName => "LogService";
     }
 }

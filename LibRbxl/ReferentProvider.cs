@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace LibRbxl
 {
-    public class ReferentManager
+    public class ReferentProvider
     {
         private readonly Dictionary<RobloxObject, int> _cache = new Dictionary<RobloxObject, int>();
         private int _nextReferent = 0;

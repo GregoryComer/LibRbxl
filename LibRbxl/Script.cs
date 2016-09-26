@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public class Script : BasePart
     {
-        public string TextureId { get; set; }
+        public override string ClassName => "Script";
+        
+        public string Source { get; set; }
     }
 }

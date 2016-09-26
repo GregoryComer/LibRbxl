@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public abstract class BasePlayerGui : Instance
     {
-        public string TextureId { get; set; }
     }
 }

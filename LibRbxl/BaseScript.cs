@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public abstract class BaseScript : LuaSourceContainer
     {
-        public string TextureId { get; set; }
+        public bool Disabled { get; set; }
+        public string LinkedSource { get; set; }
     }
 }

@@ -15,5 +15,4 @@ namespace LibRbxl
         public float P { get; set; }
         public Vector3 Position { get; set; }
     }
-    }
 }

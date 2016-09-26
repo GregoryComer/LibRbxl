@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public enum UserInputState
     {
-        public string TextureId { get; set; }
+        Begin = 0,
+        Change = 1,
+        End = 2,
+        Cancel = 3,
+        None = 4
     }
 }

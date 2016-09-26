@@ -38,7 +38,7 @@ namespace LibRbxl
             if (propertyType != PropertyType.Referent)
                 return propertyInfo.GetValue(robloxObject);
             else
-                return _document.ReferentManager.GetReferent(robloxObject);
+                return _document.ReferentProvider.GetReferent(robloxObject);
         }
 
         // TODO: Convert referent properties into object references. This is going to require the objects to be deserialized in a specific order.

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public abstract class DynamicRotate : JointInstance
     {
-        public string TextureId { get; set; }
+        public float BaseAngle { get; set; }
     }
 }

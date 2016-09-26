@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public abstract class LuaSourceContainer : Instance
     {
-        public string TextureId { get; set; }
+        [RobloxIgnore]
+        public Player CurrentEditor { get; set; }
     }
 }

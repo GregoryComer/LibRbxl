@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public abstract class BackpackItem : GuiItem
+    public class SpecialMesh : FileMesh
     {
-        public string TextureId { get; set; }
+        public override string ClassName => "SpecialMesh";
+
+        public MeshType MeshType { get; set; }
     }
 }

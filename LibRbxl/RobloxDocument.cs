@@ -11,11 +11,11 @@ namespace LibRbxl
     {
         public RobloxDocument()
         {
-            ReferentManager = new ReferentManager();
+            ReferentProvider = new ReferentProvider();
         }
 
         public List<RobloxObject> Objects { get; set; }
-        public ReferentManager ReferentManager { get; }
+        public ReferentProvider ReferentProvider { get; }
 
         public static RobloxDocument FromStream(Stream stream)
         {
