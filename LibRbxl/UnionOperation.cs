@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public class Script : BaseScript
+    public class UnionOperation : PartOperation
     {
-        public override string ClassName => "Script";
-        
-        public string Source { get; set; }
+        public override string ClassName => "UnionOperation";
+
+        // TODO
     }
 }

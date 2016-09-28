@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public class Script : BaseScript
+    public enum FormFactor
     {
-        public override string ClassName => "Script";
-        
-        public string Source { get; set; }
+        Symmetric = 0,
+        Brick = 1,
+        Plate = 2,
+        Custom = 3
     }
 }

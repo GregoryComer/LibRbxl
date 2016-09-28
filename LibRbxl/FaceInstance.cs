@@ -8,6 +8,6 @@ namespace LibRbxl
 {
     public abstract class FaceInstance : Instance
     {
-        public NormalId NormalId { get; set; }
+        public NormalId Face { get; set; }
     }
 }

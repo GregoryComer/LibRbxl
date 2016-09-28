@@ -15,8 +15,10 @@ namespace LibRbxl
         public bool ClassicChat { get; set; }
         [RobloxIgnore]
         public Player LocalPlayer { get; set; }
+        [RobloxProperty("MaxPlayersInternal", PropertyType.Int32)]
         public int MaxPlayers { get; set; }
         public int NumPlayers { get; set; }
+        [RobloxProperty("PreferredPlayersInternal", PropertyType.Int32)]
         public int PreferredPlayers { get; set; }
     }
 }

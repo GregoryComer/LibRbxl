@@ -20,5 +20,7 @@ namespace LibRbxl
         public bool PGSPhysicsSolverEnabled { get; set; }
         public bool StreamingEnabled { get; set; }
         public Terrain Terrain { get; set; }
+        [RobloxProperty("ExpSolverEnabled_Replicate", PropertyType.Boolean)]
+        public bool ExpSolverEnabledReplicate { get; set; } // TODO Figure out what this is
     }
 }

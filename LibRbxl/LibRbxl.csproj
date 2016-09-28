@@ -62,6 +62,7 @@
     <Compile Include="BaseScript.cs" />
     <Compile Include="BevelMesh.cs" />
     <Compile Include="BillboardGui.cs" />
+    <Compile Include="BinaryStringValue.cs" />
     <Compile Include="BindableEvent.cs" />
     <Compile Include="BindableFunction.cs" />
     <Compile Include="BlockMesh.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="EndianAwareBitConverter.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontSize.cs" />
+    <Compile Include="FormFactor.cs" />
     <Compile Include="Hole.cs" />
     <Compile Include="InstanceFactory.cs" />
     <Compile Include="Internal\PropertyFactory.cs" />
@@ -104,6 +106,9 @@
     <Compile Include="Internal\TypeHeader.cs" />
     <Compile Include="Internal\Util.cs" />
     <Compile Include="InvalidRobloxFileException.cs" />
+    <Compile Include="KeyframeSequence.cs" />
+    <Compile Include="Motor6D.cs" />
+    <Compile Include="PartOperation.cs" />
     <Compile Include="RobloxLZ4.cs" />
     <Compile Include="MeshType.cs" />
     <Compile Include="MouseBehavior.cs" />
@@ -183,7 +188,7 @@
     <Compile Include="JointInstance.cs" />
     <Compile Include="JointsService.cs" />
     <Compile Include="KeyCode.cs" />
-    <Compile Include="KeyFrame.cs" />
+    <Compile Include="Keyframe.cs" />
     <Compile Include="LayerCollector.cs" />
     <Compile Include="LeftRight.cs" />
     <Compile Include="Light.cs" />
@@ -277,6 +282,7 @@
     <Compile Include="Selection.cs" />
     <Compile Include="SelectionBox.cs" />
     <Compile Include="SelectionSphere.cs" />
+    <Compile Include="ServerScriptService.cs" />
     <Compile Include="ServerScriptStorage.cs" />
     <Compile Include="ServerStorage.cs" />
     <Compile Include="ServiceProvider.cs" />
@@ -327,6 +333,7 @@
     <Compile Include="TrussPart.cs" />
     <Compile Include="TrussStyle.cs" />
     <Compile Include="UDim2Property.cs" />
+    <Compile Include="UnionOperation.cs" />
     <Compile Include="UnmanagedInstance.cs" />
     <Compile Include="UserInputService.cs" />
     <Compile Include="UserInputState.cs" />

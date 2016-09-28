@@ -17,6 +17,7 @@ namespace LibRbxl
         public Color3 TextColor3 { get; set; }
         [RobloxIgnore]
         public bool TextFits { get; set; }
+        public bool TextScaled { get; set; }
         public Color3 TextStrokeColor3 { get; set; }
         public float TextStrokeTransparency { get; set; }
         public float TextTransparency { get; set; }

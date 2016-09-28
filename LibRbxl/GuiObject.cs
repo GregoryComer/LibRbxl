@@ -10,7 +10,7 @@ namespace LibRbxl
     {
         public bool Active { get; set; }
         public Color3 BackgroundColor3 { get; set; }
-        public float BackgroundTrasparency { get; set; }
+        public float BackgroundTransparency { get; set; }
         public Color3 BorderColor3 { get; set; }
         public int BorderSizePixel { get; set; }
         public bool ClipsDescendants { get; set; }

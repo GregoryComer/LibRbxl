@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public class Script : BaseScript
+    public class Motor6D : Motor
     {
-        public override string ClassName => "Script";
-        
-        public string Source { get; set; }
+        public override string ClassName => "Motor6D";
     }
 }

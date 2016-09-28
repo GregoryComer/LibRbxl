@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public class KeyFrame : Instance
+    public class Keyframe : Instance
     {
-        public override string ClassName => "KeyFrame";
+        public override string ClassName => "Keyframe";
 
         public float Time { get; set; }
     }

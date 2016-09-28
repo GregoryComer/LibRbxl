@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -64,6 +65,7 @@ namespace LibRbxl
                 else
                 {
                     instance.UnmanagedProperties.Add(property.Name, property);
+                    Trace.WriteLine($"Found unmanaged property \"{property.Name}\" of type {property.Type} on object of class {instance.ClassName}.");
                 }
             }
         }

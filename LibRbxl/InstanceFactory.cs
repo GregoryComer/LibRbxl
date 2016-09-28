@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -39,6 +40,7 @@ namespace LibRbxl
         {
             if (!MappedTypes.ContainsKey(type) || type == "Instance")
             {
+                Trace.WriteLine($"Creating unmanaged object of type {type}.");
                 var unmanagedInstance = new UnmanagedInstance(type);
                 return unmanagedInstance;
             }
