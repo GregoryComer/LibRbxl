@@ -23,8 +23,9 @@ namespace LibRbxl
             set
             {
                 _parent = value;
-                if (!_parent.Children.Contains(this))
-                    _parent.Children.Add(this);
+                // DEBUG
+                /*if (!_parent.Children.Contains(this))
+                    _parent.Children.Add(this);*/
             }
         }
 
@@ -34,9 +35,13 @@ namespace LibRbxl
         [RobloxIgnore]
         public int Referent { get; set; }
 
+        [RobloxIgnore]
+        public Dictionary<string, Property> UnmanagedProperties { get; } 
+
         protected Instance()
         {
             Children = new ChildCollection(this);
+            UnmanagedProperties = new Dictionary<string, Property>();
         }
     }
 
@@ -63,11 +68,14 @@ namespace LibRbxl
         public void Add(Instance child)
         {
             child.Parent = _owner;
-            _children.Add(child);
+            // DEBUG
+            // _children.Add(child);
         }
 
         public bool Contains(Instance child)
         {
+            if (_children.Count == 0) // DEBUG, Possible infinite recursion?
+                return false;
             return _children.Contains(child);
         }
 

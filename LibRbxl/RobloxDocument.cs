@@ -13,10 +13,11 @@ namespace LibRbxl
     {
         public RobloxDocument()
         {
+            Objects = new List<RobloxObject>();
             ReferentProvider = new ReferentProvider();
         }
 
-        public List<RobloxObject> Objects { get; set; }
+        public List<RobloxObject> Objects { get; }
         public ReferentProvider ReferentProvider { get; }
 
         public static RobloxDocument FromStream(Stream stream)
@@ -34,13 +35,13 @@ namespace LibRbxl
                 var objectCount = reader.ReadInt32();
                 reader.ReadInt32(); // Reserved
                 reader.ReadInt32(); // Reserved
-                
+
                 // Deserialize type headers
                 var typeHeaders = new TypeHeader[typeCount];
                 for (var i = 0; i < typeCount; i++)
                 {
                     var typeHeaderSignature = reader.ReadBytes(Signatures.TypeHeaderSignature.Length);
-                    if (typeHeaderSignature.SequenceEqual(Signatures.TypeHeaderSignature))
+                    if (!typeHeaderSignature.SequenceEqual(Signatures.TypeHeaderSignature))
                         throw new InvalidRobloxFileException("Invalid type header signature.");
 
                     var decompressedBytes = RobloxLZ4.ReadBlock(stream);
@@ -51,14 +52,19 @@ namespace LibRbxl
                 // Read property data
                 var propertyData = new Dictionary<int, List<PropertyBlock>>(); // Key is type id
                 byte[] lastPropSignature;
+
                 while (true)
                 {
-                    lastPropSignature = reader.ReadBytes(Signatures.ParentDataSignature.Length);
-                    if (!lastPropSignature.SequenceEqual(Signatures.ParentDataSignature))
+                    lastPropSignature = reader.ReadBytes(Signatures.PropBlockSignature.Length);
+                    if (!lastPropSignature.SequenceEqual(Signatures.PropBlockSignature))
                         break;
 
                     var decompressedBytes = RobloxLZ4.ReadBlock(stream);
                     var propertyBlock = PropertyBlock.Deserialize(decompressedBytes, typeHeaders);
+                    
+                    if (propertyBlock == null)
+                        continue;
+
                     if (!propertyData.ContainsKey(propertyBlock.TypeId))
                         propertyData.Add(propertyBlock.TypeId, new List<PropertyBlock>());
                     propertyData[propertyBlock.TypeId].Add(propertyBlock);
@@ -99,20 +105,41 @@ namespace LibRbxl
                         propertyCollections.Add(propertyCollection);
                     }
                 }
-
+                
                 // Set properties
                 for (var i = 0; i < instances.Count; i++)
                 {
                     var instance = instances[i];
-                    serializer.SetProperties(instance, propertyCollections[i]);
+                    serializer.SetProperties(document, instance, propertyCollections[i]);
+                }
+
+                // Set parents
+                foreach (var pair in childParentPairs)
+                {
+                    if (pair.Item2 == -1) continue; // No parent
+                    try
+                    {
+                        var child = document.ReferentProvider.GetCached(pair.Item1);
+                        var parent = document.ReferentProvider.GetCached(pair.Item2);
+                        child.Parent = parent;
+                    }
+                    // DEBUG
+                    catch (Exception ex)
+                    {
+
+                    }
                 }
 
                 document.Objects.AddRange(instances);
                 return document;
             }
-            catch (Exception ex)
+                /*catch (Exception ex)
             {
                 throw new InvalidRobloxFileException("The specified Roblox file is corrupt or invalid.", ex);
+            }*/
+                // DEBUG
+            finally
+            {
             }
 
             throw new NotImplementedException();

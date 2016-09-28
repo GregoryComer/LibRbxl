@@ -35,7 +35,7 @@ namespace LibRbxl.Internal
             var typeName = Util.ReadLengthPrefixedString(reader);
             var containsExtraDataByte = reader.ReadByte();
             var instanceCount = reader.ReadInt32();
-            var referentArray = Util.ReverseTransformInt32Array(reader.ReadBytes(instanceCount*sizeof (int)));
+            var referentArray = Util.ReadReferentArray(reader, instanceCount);
             var extraData = (containsExtraDataByte != 0) ? reader.ReadBytes(instanceCount) : null;
             
             return new TypeHeader(typeName, typeId, referentArray, extraData);
@@ -60,6 +60,11 @@ namespace LibRbxl.Internal
             writer.WriteBytes(Util.TransformInt32Array(value.Referents));
             if (value.AdditionalData != null)
                 writer.WriteBytes(value.AdditionalData);
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

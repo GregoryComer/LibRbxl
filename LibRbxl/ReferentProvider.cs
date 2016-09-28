@@ -6,17 +6,17 @@ namespace LibRbxl
 {
     public class ReferentProvider
     {
-        private readonly Dictionary<RobloxObject, int> _cache = new Dictionary<RobloxObject, int>();
+        private readonly Dictionary<Instance, int> _cache = new Dictionary<Instance, int>();
         private int _nextReferent = 0;
 
-        public void Add(RobloxObject robloxObject, int referent)
+        public void Add(Instance instance, int referent)
         {
-            if (_cache.ContainsKey(robloxObject) && _cache[robloxObject] != referent)
-                throw new ArgumentException("The specified roblox object already has a cached referent value.", nameof(robloxObject));
-            if (_cache.ContainsValue(referent) && !_cache.Any(n => n.Value == referent && n.Key == robloxObject))
+            if (_cache.ContainsKey(instance) && _cache[instance] != referent)
+                throw new ArgumentException("The specified roblox object already has a cached referent value.", nameof(instance));
+            if (_cache.ContainsValue(referent) && !_cache.Any(n => n.Value == referent && n.Key == instance))
                 throw new ArgumentException("The specified referent value already exists.");
 
-            _cache.Add(robloxObject, referent);
+            _cache.Add(instance, referent);
             if (_nextReferent < referent)
                 _nextReferent = referent + 1;
         }
@@ -26,14 +26,14 @@ namespace LibRbxl
             _cache.Clear();
         }
         
-        public int GetReferent(RobloxObject robloxObject)
+        public int GetReferent(Instance instance)
         {
-            if (_cache.ContainsKey(robloxObject))
-                return _cache[robloxObject];
+            if (_cache.ContainsKey(instance))
+                return _cache[instance];
             else
             {
                 var referent = AllocateReferent();
-                _cache.Add(robloxObject, referent);
+                _cache.Add(instance, referent);
                 return referent;
             }
         }
@@ -41,6 +41,11 @@ namespace LibRbxl
         private int AllocateReferent()
         {
             return _nextReferent++;
+        }
+
+        public Instance GetCached(int referent)
+        {
+            return _cache.First(n => n.Value == referent).Key;
         }
     }
 }

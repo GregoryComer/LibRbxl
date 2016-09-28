@@ -17,37 +17,54 @@ namespace LibRbxl
             _document = document;
         }
 
-        public PropertyCollection GetProperties(RobloxObject robloxObject)
+        public PropertyCollection GetProperties(Instance instance)
         {
             var properties = new PropertyCollection();
-            foreach (var prop in robloxObject.GetType().GetProperties())
+            foreach (var prop in instance.GetType().GetProperties())
             {
                 if (CheckNoSerialize(prop))
                     continue;
                 var propertyType = GetPropertyType(prop);
                 var propertyName = GetPropertyName(prop);
-                var propertyValue = GetPropertyValue(robloxObject, prop, propertyType);
+                var propertyValue = GetPropertyValue(instance, prop, propertyType);
                 var robloxProperty = GetRobloxProperty(propertyValue, propertyName, propertyType);
                 properties.Add(robloxProperty);
             }
             return properties;
         }
 
-        private object GetPropertyValue(RobloxObject robloxObject, PropertyInfo propertyInfo, PropertyType propertyType)
+        private object GetPropertyValue(Instance instance, PropertyInfo propertyInfo, PropertyType propertyType)
         {
             if (propertyType != PropertyType.Referent)
-                return propertyInfo.GetValue(robloxObject);
+                return propertyInfo.GetValue(instance);
             else
-                return _document.ReferentProvider.GetReferent(robloxObject);
+                return _document.ReferentProvider.GetReferent(instance);
         }
-
-        // TODO: Convert referent properties into object references. This is going to require the objects to be deserialized in a specific order.
-        public void SetProperties(RobloxObject robloxObject, PropertyCollection propertyCollection)
+        
+        public void SetProperties(RobloxDocument document, Instance instance, PropertyCollection propertyCollection)
         {
             foreach (var property in propertyCollection)
             {
-                var clrProperty = GetClrPropertyForRobloxProperty(robloxObject, property);
-                clrProperty.SetValue(robloxObject, property.Get());
+                var clrProperty = GetClrPropertyForRobloxProperty(instance, property);
+                if (clrProperty != null)
+                {
+                    if (property.Type != PropertyType.Referent)
+                        clrProperty.SetValue(instance, property.Get());
+                    else
+                    {
+                        var referent = (int) property.Get();
+                        if (referent != 0)
+                            // It seems like in many cases 0 means no referent? For example, gui object's next selection property. TODO look into this.
+                        {
+                            var inst = (referent != -1) ? document.ReferentProvider.GetCached(referent) : null;
+                            clrProperty.SetValue(instance, inst);
+                        }
+                    }
+                }
+                else
+                {
+                    instance.UnmanagedProperties.Add(property.Name, property);
+                }
             }
         }
 

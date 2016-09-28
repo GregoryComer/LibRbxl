@@ -37,8 +37,11 @@ namespace LibRbxl
 
         public static Instance Create(string type)
         {
-            if (!MappedTypes.ContainsKey(type))
-                throw new ArgumentException($"No managed type for Roblox type \"{type}\".");
+            if (!MappedTypes.ContainsKey(type) || type == "Instance")
+            {
+                var unmanagedInstance = new UnmanagedInstance(type);
+                return unmanagedInstance;
+            }
 
             var managedType = MappedTypes[type];
             var instance = (Instance)Activator.CreateInstance(managedType);

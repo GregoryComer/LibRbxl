@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public class Camera : Instance
+    public class Camera : Instance, ICameraSubject
     {
         public override string ClassName => "Camera";
 

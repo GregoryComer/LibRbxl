@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
-      <HintPath>..\packages\lz4net.1.0.10.93\lib\net4-client\LZ4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -94,6 +90,7 @@
     <Compile Include="CharacterAppearance.cs" />
     <Compile Include="CharacterMesh.cs" />
     <Compile Include="ConcurrencyModel.cs" />
+    <Compile Include="CSGDictionaryService.cs" />
     <Compile Include="EndianAwareBinaryReader.cs" />
     <Compile Include="EndianAwareBinaryWriter.cs" />
     <Compile Include="EndianAwareBitConverter.cs" />
@@ -330,6 +327,7 @@
     <Compile Include="TrussPart.cs" />
     <Compile Include="TrussStyle.cs" />
     <Compile Include="UDim2Property.cs" />
+    <Compile Include="UnmanagedInstance.cs" />
     <Compile Include="UserInputService.cs" />
     <Compile Include="UserInputState.cs" />
     <Compile Include="UserInputType.cs" />
@@ -346,9 +344,6 @@
     <Compile Include="WedgePart.cs" />
     <Compile Include="Weld.cs" />
     <Compile Include="Workspace.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,7 +22,7 @@ namespace LibRbxl.Test
             Assert.AreEqual("Part", parsed.Name);
             Assert.AreEqual(0x13, parsed.TypeId);
             Assert.AreEqual(3, parsed.InstanceCount);
-            Assert.AreEqual(new[] {2, 1, 3}, parsed.Referents);
+            Assert.AreEqual(new[] {2, 3, 6}, parsed.Referents);
             Assert.IsNull(parsed.AdditionalData);
         }
 
@@ -36,7 +36,7 @@ namespace LibRbxl.Test
             Assert.AreEqual("Part", parsed.Name);
             Assert.AreEqual(0x13, parsed.TypeId);
             Assert.AreEqual(3, parsed.InstanceCount);
-            Assert.AreEqual(new[] { 2, 1, 3 }, parsed.Referents);
+            Assert.AreEqual(new[] { 2, 3, 6 }, parsed.Referents);
             Assert.AreEqual(new byte[] {0x1, 0x2, 0x3}, parsed.AdditionalData);
         }
 

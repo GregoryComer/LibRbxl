@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace LibRbxl
 {
-    public class Debris : Instance
+    public class CSGDictionaryService : Instance
     {
-        public override string ClassName => "Debris";
-
-        public int MaxItems { get; set; }
+        public override string ClassName => "CSGDictionaryService";
     }
 }

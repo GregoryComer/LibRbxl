@@ -41,10 +41,10 @@ namespace LibRbxl.Internal
 
             for (var i = 0; i < valueCount; i++)
             {
-                data[i] = interleavedBytes[i*valueSize];
-                data[i + valueCount] = interleavedBytes[i*valueSize + 1];
-                data[i + valueCount * 2] = interleavedBytes[i*valueSize + 2];
-                data[i + valueCount * 3] = interleavedBytes[i * valueSize + 3];
+                interleavedBytes[i] = data[i*valueSize];
+                interleavedBytes[i + valueCount] = data[i*valueSize + 1];
+                interleavedBytes[i + valueCount * 2] = data[i*valueSize + 2];
+                interleavedBytes[i + valueCount * 3] = data[i * valueSize + 3];
             }
 
             return interleavedBytes;
@@ -151,16 +151,19 @@ namespace LibRbxl.Internal
         public static int[] ReadReferentArray(EndianAwareBinaryReader reader, int count)
         {
             var values = new int[count];
-            var bytes = reader.ReadBytes(count * sizeof(int));
-            var deinterleaved = DeinterleaveBytes(bytes, sizeof(int));
+            var bytes = reader.ReadBytes(count*sizeof (int));
+            var deinterleaved = DeinterleaveBytes(bytes, sizeof (int));
 
             var last = 0;
-            var buffer = new byte[sizeof(int)];
+            var buffer = new byte[sizeof (int)];
             for (var i = 0; i < count; i++)
             {
-                Array.Copy(deinterleaved, i * sizeof(int), buffer, 0, sizeof(int));
-                values[i] = EndianAwareBitConverter.ToInt32(buffer, Endianness.Big) + last;
-                last = values[i];
+                Array.Copy(deinterleaved, i*sizeof (int), buffer, 0, sizeof (int));
+                var value = EndianAwareBitConverter.ToInt32(buffer, Endianness.Big);
+                value = ReverseTransformInt32(value);
+                value += last;
+                values[i] = value;
+                last = value;
             }
 
             return values;

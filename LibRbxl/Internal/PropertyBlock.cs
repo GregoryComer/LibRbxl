@@ -106,7 +106,19 @@ namespace LibRbxl.Internal
                 }
                 case PropertyType.CFrame: // TODO
                 {
-                    throw new NotImplementedException();
+                    //DEBUG
+                    for (var i = 0; i < typeHeader.InstanceCount; i++)
+                    {
+                        var isShort = reader.ReadByte() != 0;
+                        if (!isShort)
+                            reader.ReadBytes(9*sizeof (float));
+                    }
+                    for (var i = 0; i < typeHeader.InstanceCount; i++)
+                    {
+                        reader.ReadBytes(3 * sizeof(float));
+                    }
+                    return new PropertyBlock<CFrame>(name, dataType, typeId, new CFrame[typeHeader.InstanceCount]);
+                    //throw new NotImplementedException();
                 }
                 case PropertyType.Enumeration:
                 {
@@ -119,7 +131,11 @@ namespace LibRbxl.Internal
                     return new PropertyBlock<int>(name, dataType, typeId, values);
                 }
                 default:
-                    throw new InvalidRobloxFileException("Unknown property data type");
+                {
+                    // DEBUG
+                    return null;
+                    //throw new InvalidRobloxFileException("Unknown property data type");
+                }
             }
         }
 
