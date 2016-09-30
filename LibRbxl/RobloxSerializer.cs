@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using LibRbxl.Instances;
 
 namespace LibRbxl
 {
@@ -95,25 +96,17 @@ namespace LibRbxl
         /// <summary>
         /// Looks for a matching CLR property on the given object. Properties with a matching RobloxPropertyAttribute take precedence. If no attribute match is found, a match by name is attempted. If no match is found, it returns null.
         /// </summary>
+        /// <returns>
+        /// Either the matching property or null.
+        /// </returns>
         private PropertyInfo GetClrPropertyForRobloxProperty(RobloxObject robloxObject, Property property)
         {
-            var properties = robloxObject.GetType().GetProperties();
+            PropertyInfo match;
 
-            // Look for a matching RobloxPropertyAttribute
-            foreach (var propInfo in properties)
-            {
-                var attrs = propInfo.GetCustomAttributes<RobloxPropertyAttribute>().ToArray();
-                if (!attrs.Any())
-                    continue;
-                if (CheckRobloxPropertyAttributeMatchesProperty(attrs.First(), property))
-                    return propInfo;
-            }
-
-            // Look for a matching name
-            var match = properties.FirstOrDefault(n => string.Compare(n.Name, property.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
-
-            // Either the matching property or null
-            return match;
+            if (robloxObject.PropertyCache.Get(property.Name, out match))
+                return match;
+                
+            return null;
         }
 
         private bool CheckRobloxPropertyAttributeMatchesProperty(RobloxPropertyAttribute robloxPropertyAttribute, Property property)

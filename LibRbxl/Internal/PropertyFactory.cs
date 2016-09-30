@@ -1,4 +1,5 @@
 ﻿using System;
+using LibRbxl.Instances;
 
 namespace LibRbxl.Internal
 {
