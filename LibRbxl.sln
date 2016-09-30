@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.25618.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibRbxl", "LibRbxl\LibRbxl.csproj", "{CCB424B9-217F-46EB-B1C0-BD04718CBE73}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibRbxl.Test", "LibRbxl.Test\LibRbxl.Test.csproj", "{47CFD98F-445D-42BD-B549-F5F24987EF57}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{827F74A2-9E5E-4EF6-8A69-36399200A102}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{47CFD98F-445D-42BD-B549-F5F24987EF57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47CFD98F-445D-42BD-B549-F5F24987EF57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47CFD98F-445D-42BD-B549-F5F24987EF57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{827F74A2-9E5E-4EF6-8A69-36399200A102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{827F74A2-9E5E-4EF6-8A69-36399200A102}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{827F74A2-9E5E-4EF6-8A69-36399200A102}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{827F74A2-9E5E-4EF6-8A69-36399200A102}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

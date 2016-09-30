@@ -8,11 +8,11 @@ using LibRbxl.Instances;
 
 namespace LibRbxl
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public class RobloxPropertyAttribute : Attribute
     {
-        public RobloxPropertyAttribute(string propertyName, PropertyType type, object defaultValue)
+        public RobloxPropertyAttribute(string propertyName, PropertyType type)
         {
-            DefaultValue = defaultValue,
             PropertyName = propertyName;
             Type = type;
         }

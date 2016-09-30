@@ -112,6 +112,7 @@
     <Compile Include="Instances\Motor6D.cs" />
     <Compile Include="Instances\PartOperation.cs" />
     <Compile Include="Property.cs" />
+    <Compile Include="PropertyBlockFactory.cs" />
     <Compile Include="RobloxLZ4.cs" />
     <Compile Include="Instances\MeshType.cs" />
     <Compile Include="Instances\MouseBehavior.cs" />
@@ -266,7 +267,6 @@
     <Compile Include="Instances\FloatProperty.cs" />
     <Compile Include="Instances\Instance.cs" />
     <Compile Include="Instances\Int32Property.cs" />
-    <Compile Include="RobloxObject.cs" />
     <Compile Include="PropertyCollection.cs" />
     <Compile Include="Instances\RayProperty.cs" />
     <Compile Include="ReferentProperty.cs" />

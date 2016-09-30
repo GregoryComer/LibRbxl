@@ -494,5 +494,42 @@ namespace LibRbxl.Internal
             WriteFloatArray(writer, yValues);
             WriteFloatArray(writer, zValues);
         }
+
+        public static Tuple<int, int>[] BuildParentData(List<Instance> objects, ReferentProvider referentProvider)
+        {
+            var pairs = new Tuple<int, int>[objects.Count];
+            for (var i = 0; i < objects.Count; i++)
+            {
+                pairs[i] = new Tuple<int, int>(referentProvider.GetReferent(objects[i]), objects[i].Parent != null ? referentProvider.GetReferent(objects[i].Parent) : -1);
+            }
+            return pairs;
+        }
+
+        public static byte[] SerializeParentData(Tuple<int, int>[] parentData)
+        {
+            var stream = new MemoryStream();
+            var writer = new EndianAwareBinaryWriter(stream);
+            SerializeParentData(writer, parentData);
+            var buffer = new byte[stream.Length];
+            Array.Copy(stream.GetBuffer(), buffer, stream.Length);
+            return buffer;
+        }
+
+        public static void SerializeParentData(EndianAwareBinaryWriter writer, Tuple<int, int>[] parentData)
+        {
+            // This could be improved by creating an incremental version of WriteReferentArray
+            var children = new int[parentData.Length];
+            var parents = new int[parentData.Length];
+            for (var i = 0; i < parentData.Length; i++)
+            {
+                children[i] = parentData[i].Item1;
+                parents[i] = parentData[i].Item2;
+            }
+
+            writer.WriteByte(0); // Reserved
+            writer.WriteInt32(parentData.Length);
+            WriteReferentArray(writer, children);
+            WriteReferentArray(writer, parents);
+        }
     }
 }

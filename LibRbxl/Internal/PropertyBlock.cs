@@ -142,29 +142,165 @@ namespace LibRbxl.Internal
 
         public abstract Property GetProperty(int index);
 
-        public static PropertyBlock FromCollection(string propertyName, IEnumerable<Property> properties)
-        {
-            throw new NotImplementedException();
-        }
-
         public byte[] Serialize()
         {
-            throw new NotImplementedException();
+            var stream = new MemoryStream();
+            var writer = new EndianAwareBinaryWriter(stream);
+            Serialize(writer);
+            var buffer = new byte[stream.Length];
+            Array.Copy(stream.GetBuffer(), buffer, stream.Length);
+            return buffer;
         }
+
+        private void Serialize(EndianAwareBinaryWriter writer)
+        {
+            writer.WriteInt32(TypeId);
+            Util.WriteLengthPrefixedString(writer, Name);
+            writer.WriteByte((byte)PropertyType);
+            SerializeValues(writer);
+        }
+
+        protected abstract void SerializeValues(EndianAwareBinaryWriter writer);
     }
 
     internal class PropertyBlock<T> : PropertyBlock
     {
-        public T[] Values { get; set; }
+        public List<T> Values { get; }
 
-        public PropertyBlock(string name, PropertyType propertyType, int typeId, T[] values) : base(name, propertyType, typeId)
+        public PropertyBlock(string name, PropertyType propertyType, int typeId) : base(name, propertyType, typeId)
         {
-            Values = values;
+            Values = new List<T>();
+        }
+
+        public PropertyBlock(string name, PropertyType propertyType, int typeId, int capacity) : base(name, propertyType, typeId)
+        {
+            Values = new List<T>(capacity);
+        }
+
+        public PropertyBlock(string name, PropertyType propertyType, int typeId, IEnumerable<T> values) : base(name, propertyType, typeId)
+        {
+            Values = new List<T>(values);
         }
 
         public override Property GetProperty(int index)
         {
             return PropertyFactory.Create(Name, PropertyType, Values[index]);
+        }
+
+        protected override void SerializeValues(EndianAwareBinaryWriter writer)
+        {
+            var values = Values.ToArray();
+            switch (PropertyType)
+            {
+                case PropertyType.String:
+                    var strValues = values as string[];
+                    if (strValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteStringArray(writer, strValues);
+                    break;
+                case PropertyType.Boolean:
+                    var boolValues = values as bool[];
+                    if (boolValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteBoolArray(writer, boolValues);
+                    break;
+                case PropertyType.Int32:
+                    var intValues = values as int[];
+                    if (intValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteInt32Array(writer, intValues);
+                    break;
+                case PropertyType.Float:
+                    var floatValues = values as float[];
+                    if (floatValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteFloatArray(writer, floatValues);
+                    break;
+                case PropertyType.Double:
+                    var doubleValues = values as double[];
+                    if (doubleValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteDoubleArray(writer, doubleValues);
+                    break;
+                case PropertyType.UDim2:
+                    var udim2Values = values as UDim2[];
+                    if (udim2Values == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteUDim2Array(writer, udim2Values);
+                    break;
+                case PropertyType.Ray:
+                    var rayValues = values as Ray[];
+                    if (rayValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteRayArray(writer, rayValues);
+                    break;
+                case PropertyType.Faces:
+                    var facesValues = values as Faces[];
+                    if (facesValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteFacesArray(writer, facesValues);
+                    break;
+                case PropertyType.Axis:
+                    var axisValues = values as Axis[];
+                    if (axisValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteAxisArray(writer, axisValues);
+                    break;
+                case PropertyType.BrickColor:
+                    var brickColorValues = values as BrickColor[];
+                    if (brickColorValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteBrickColorArray(writer, brickColorValues);
+                    break;
+                case PropertyType.Color3:
+                    var colorValues = values as Color3[];
+                    if (colorValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteColor3Array(writer, colorValues);
+                    break;
+                case PropertyType.Vector2:
+                    var vector2Values = values as Vector2[];
+                    if (vector2Values == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteVector2Array(writer, vector2Values);
+                    break;
+                case PropertyType.Vector3:
+                    var vector3Values = values as Vector3[];
+                    if (vector3Values == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteVector3Array(writer, vector3Values);
+                    break;
+                case PropertyType.CFrame:
+                    var cFrameValues = values as CFrame[];
+                    if (cFrameValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    // Util.WriteCFrameArray(writer, cFrameValues);
+                    
+                    // DEBUG
+                    for (var i = 0; i < values.Length; i++)
+                    {
+                        writer.WriteByte(0x2);
+                    }
+                    Util.WriteFloatArray(writer, values.Select(n => 0.0f).ToArray());
+                    Util.WriteFloatArray(writer, values.Select(n => 0.0f).ToArray());
+                    Util.WriteFloatArray(writer, values.Select(n => 0.0f).ToArray());
+
+                    break;
+                case PropertyType.Enumeration:
+                    var enumValues = values as int[];
+                    if (enumValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteEnumerationArray(writer, enumValues);
+                    break;
+                case PropertyType.Referent:
+                    var refValues = values as int[];
+                    if (refValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteReferentArray(writer, refValues);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

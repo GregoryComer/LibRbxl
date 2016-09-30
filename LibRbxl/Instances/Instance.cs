@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace LibRbxl.Instances
 {
-    public abstract class Instance : RobloxObject
+    public abstract class Instance
     {
         private Instance _parent;
         public bool Archivable { get; set; }
 
+        [RobloxIgnore]
         public abstract string ClassName { get; }
 
         public string Name { get; set; }

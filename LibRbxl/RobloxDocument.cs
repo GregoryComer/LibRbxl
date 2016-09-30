@@ -23,6 +23,14 @@ namespace LibRbxl
         
         // public Workspace Workspace { get; }
 
+        public void Save(string filename)
+        {
+            using (var filestream = File.OpenWrite(filename))
+            {
+                Save(filestream);
+            }
+        }
+
         public void Save(Stream stream)
         {
             var writer = new EndianAwareBinaryWriter(stream);
@@ -56,26 +64,29 @@ namespace LibRbxl
             // Write property data
             foreach (var typeGroup in groupedObjects)
             {
-                var propertySets = typeGroup.Value.Select(n => serializer.GetProperties(n)).ToArray(); // Set of properties for each object
-                var propertyNames = propertySets.SelectMany(n => n.Items.Keys).Distinct().ToArray(); // Array of unique property namers
-                var propertyCollections = // Gets a PropertyCollection for each distinct property type
-                    propertyNames.Select(
-                        propertyName =>
-                        {
-                            var set = propertySets.Select(
-                                propertyCollection =>
-                                    propertyCollection.Contains(propertyName)
-                                        ? propertyCollection[propertyName]
-                                        : serializer.GetPropertyDefault(propertyName, typeGroup.Value.GetType()));
-                            return new {Properties = set, PropertyName = propertyName};
-                        }).ToDictionary(n => n.PropertyName, n => n.Properties);
-                var propertyBlocks = propertyCollections.Select(n => PropertyBlock.FromCollection(n.Key, n.Value));
+                var typeHeader = typeHeaders.First(n => n.Name == typeGroup.Key);
+                var instanceTypes = serializer.GetUniqueProperties(typeGroup.Value);
+                var propertyBlocks = new List<PropertyBlock>();
+                foreach (var propType in instanceTypes)
+                {
+                    propertyBlocks.Add(serializer.FillPropertyBlock(propType.Key, propType.Value, typeHeader.TypeId, typeGroup.Value, ReferentProvider));
+                }
                 foreach (var bytes in propertyBlocks.Select(propertyBlock => propertyBlock.Serialize()))
                 {
                     writer.WriteBytes(Signatures.PropBlockSignature);
                     RobloxLZ4.WriteBlock(stream, bytes);
                 }
             }
+
+            // Build parent child referent arrays
+            var parentData = Util.BuildParentData(Objects, ReferentProvider);
+            var parentDataBytes = Util.SerializeParentData(parentData);
+            writer.WriteBytes(Signatures.ParentDataSignature);
+            RobloxLZ4.WriteBlock(stream, parentDataBytes);
+
+            // Write ending signature
+            writer.WriteBytes(Signatures.EndSignature);
+            writer.WriteBytes(Signatures.FileEndSignature);
         }
         
         public static RobloxDocument FromStream(Stream stream)
@@ -183,9 +194,12 @@ namespace LibRbxl
                 document.Objects.AddRange(instances);
                 return document;
             }
-            catch (Exception ex)
+                /*catch (Exception ex)
             {
                 throw new InvalidRobloxFileException("The specified Roblox file is corrupt or invalid.", ex);
+            }*/
+            finally
+            {
             }
         }
 

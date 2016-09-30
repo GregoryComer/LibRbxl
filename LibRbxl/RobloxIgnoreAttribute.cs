@@ -9,6 +9,7 @@ namespace LibRbxl
     /// <summary>
     /// Causes the serializer to ignore this value.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
     public class RobloxIgnoreAttribute : Attribute
     {
 

@@ -31,6 +31,9 @@ namespace LibRbxl
         
         public int GetReferent(Instance instance)
         {
+            if (instance == null)
+                return -1;
+
             if (_cache.ContainsKey(instance))
                 return _cache[instance];
             else
