@@ -13,7 +13,7 @@ namespace LibRbxl.Internal
         public PropertyType PropertyType { get; set; }
         public int TypeId { get; set; }
 
-        public PropertyBlock(string name, PropertyType propertyType, int typeId)
+        protected PropertyBlock(string name, PropertyType propertyType, int typeId)
         {
             Name = name;
             PropertyType = propertyType;
@@ -140,6 +140,16 @@ namespace LibRbxl.Internal
         }
 
         public abstract Property GetProperty(int index);
+
+        public static PropertyBlock FromCollection(string propertyName, IEnumerable<Property> properties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] Serialize()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class PropertyBlock<T> : PropertyBlock

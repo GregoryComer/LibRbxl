@@ -13,18 +13,75 @@ namespace LibRbxl
     {
         public RobloxDocument()
         {
-            Objects = new List<RobloxObject>();
+            Objects = new List<Instance>();
             ReferentProvider = new ReferentProvider();
         }
 
-        public List<RobloxObject> Objects { get; }
+        public List<Instance> Objects { get; }
         public ReferentProvider ReferentProvider { get; }
+        
+        // public Workspace Workspace { get; }
 
+        public void Save(Stream stream)
+        {
+            var writer = new EndianAwareBinaryWriter(stream);
+            var serializer = new RobloxSerializer(this);
+
+            ReferentProvider.ClearCache(); // Clearing existing referent cache guarantees that referents won't be fragmented
+            var groupedObjects = Objects.GroupBy(n => n.ClassName).ToDictionary(n => n.Key, n => n.ToArray());
+
+            var typeCount = groupedObjects.Count;
+            var objectCount = Objects.Count;
+            
+            writer.WriteBytes(Signatures.Signature); // File signature
+            writer.WriteInt32(typeCount); // Generic header values
+            writer.WriteInt32(objectCount);
+            writer.WriteInt32(0); // Reserved
+            writer.WriteInt32(0); // Reserved
+
+            // Write type headers
+            var typeHeaders = new TypeHeader[typeCount];
+            var nextTypeId = 0;
+            foreach (var typeGroup in groupedObjects)
+            {
+                var typeHeader = new TypeHeader(typeGroup.Key, nextTypeId, typeGroup.Value.Select(n => ReferentProvider.GetReferent(n)).ToArray()); // TODO Additional service data
+                typeHeaders[nextTypeId] = typeHeader;
+                var bytes = typeHeader.Serialize();
+                writer.WriteBytes(Signatures.TypeHeaderSignature);
+                RobloxLZ4.WriteBlock(stream, bytes);
+                nextTypeId++;
+            }
+
+            // Write property data
+            foreach (var typeGroup in groupedObjects)
+            {
+                var propertySets = typeGroup.Value.Select(n => serializer.GetProperties(n)).ToArray(); // Set of properties for each object
+                var propertyNames = propertySets.SelectMany(n => n.Items.Keys).Distinct().ToArray(); // Array of unique property namers
+                var propertyCollections = // Gets a PropertyCollection for each distinct property type
+                    propertyNames.Select(
+                        propertyName =>
+                        {
+                            var set = propertySets.Select(
+                                propertyCollection =>
+                                    propertyCollection.Contains(propertyName)
+                                        ? propertyCollection[propertyName]
+                                        : serializer.GetPropertyDefault(propertyName, typeGroup.Value.GetType()));
+                            return new {Properties = set, PropertyName = propertyName};
+                        }).ToDictionary(n => n.PropertyName, n => n.Properties);
+                var propertyBlocks = propertyCollections.Select(n => PropertyBlock.FromCollection(n.Key, n.Value));
+                foreach (var bytes in propertyBlocks.Select(propertyBlock => propertyBlock.Serialize()))
+                {
+                    writer.WriteBytes(Signatures.PropBlockSignature);
+                    RobloxLZ4.WriteBlock(stream, bytes);
+                }
+            }
+        }
+        
         public static RobloxDocument FromStream(Stream stream)
         {
             try
             {
-                var reader = new EndianAwareBinaryReader(stream, Endianness.Little);
+                var reader = new EndianAwareBinaryReader(stream);
 
                 // Check file signature
                 var signatureBytes = reader.ReadBytes(Signatures.Signature.Length);
@@ -61,7 +118,7 @@ namespace LibRbxl
 
                     var decompressedBytes = RobloxLZ4.ReadBlock(stream);
                     var propertyBlock = PropertyBlock.Deserialize(decompressedBytes, typeHeaders);
-                    
+
                     if (propertyBlock == null)
                         continue;
 
@@ -105,7 +162,7 @@ namespace LibRbxl
                         propertyCollections.Add(propertyCollection);
                     }
                 }
-                
+
                 // Set properties
                 for (var i = 0; i < instances.Count; i++)
                 {
@@ -117,37 +174,19 @@ namespace LibRbxl
                 foreach (var pair in childParentPairs)
                 {
                     if (pair.Item2 == -1) continue; // No parent
-                    try
-                    {
-                        var child = document.ReferentProvider.GetCached(pair.Item1);
-                        var parent = document.ReferentProvider.GetCached(pair.Item2);
-                        child.Parent = parent;
-                    }
-                    // DEBUG
-                    catch (Exception ex)
-                    {
-
-                    }
+                    var child = document.ReferentProvider.GetCached(pair.Item1);
+                    var parent = document.ReferentProvider.GetCached(pair.Item2);
+                    child.Parent = parent;
                 }
 
                 document.Objects.AddRange(instances);
                 return document;
             }
-                /*catch (Exception ex)
+            catch (Exception ex)
             {
                 throw new InvalidRobloxFileException("The specified Roblox file is corrupt or invalid.", ex);
-            }*/
-                // DEBUG
-            finally
-            {
             }
-
-            throw new NotImplementedException();
         }
-
-        public DataModel DataModel { get; }
-
-        public Workspace Workspace { get; }
 
         public static RobloxDocument FromFile(string filename)
         {

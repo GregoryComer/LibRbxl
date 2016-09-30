@@ -41,25 +41,25 @@ namespace LibRbxl.Internal
             return new TypeHeader(typeName, typeId, referentArray, extraData);
         }
 
-        public static byte[] Serialize(TypeHeader value)
+        public byte[] Serialize()
         {
             var stream = new MemoryStream();
             var writer = new EndianAwareBinaryWriter(stream);
 
-            Serialize(writer, value);
+            Serialize(writer);
 
             return stream.GetBuffer().Take((int) stream.Length).ToArray();
         }
 
-        public static void Serialize(EndianAwareBinaryWriter writer, TypeHeader value)
+        public void Serialize(EndianAwareBinaryWriter writer)
         {
-            writer.WriteInt32(value.TypeId);
-            Util.WriteLengthPrefixedString(writer, value.Name);
-            writer.WriteByte((byte) (value.AdditionalData != null ? 1 : 0));
-            writer.WriteInt32(value.InstanceCount);
-            writer.WriteBytes(Util.TransformInt32Array(value.Referents));
-            if (value.AdditionalData != null)
-                writer.WriteBytes(value.AdditionalData);
+            writer.WriteInt32(TypeId);
+            Util.WriteLengthPrefixedString(writer, Name);
+            writer.WriteByte((byte) (AdditionalData != null ? 1 : 0));
+            writer.WriteInt32(InstanceCount);
+            writer.WriteBytes(Util.TransformInt32Array(Referents));
+            if (AdditionalData != null)
+                writer.WriteBytes(AdditionalData);
         }
 
         public override string ToString()

@@ -12,6 +12,7 @@ namespace LibRbxl
     public class RobloxSerializer
     {
         private readonly RobloxDocument _document;
+        private readonly Dictionary<Tuple<Type, string>, Property> _defaultPropertyCache = new Dictionary<Tuple<Type, string>, Property>(); 
 
         public RobloxSerializer(RobloxDocument document)
         {
@@ -32,6 +33,27 @@ namespace LibRbxl
                 properties.Add(robloxProperty);
             }
             return properties;
+        }
+
+        public Property GetPropertyDefault(string propertyName, Type parentType, Property existing)
+        {
+            var cacheKey = new Tuple<Type, string>(parentType, propertyName);
+            if (_defaultPropertyCache.ContainsKey(cacheKey))
+            {
+                return _defaultPropertyCache[cacheKey];
+            }
+
+            foreach (var propertyInfo in parentType.GetProperties())
+            {
+                if (propertyInfo.Name == propertyName)
+                {
+                    var attrs = propertyInfo.GetCustomAttributes<RobloxPropertyAttribute>();
+                    if (attrs.Any())
+                    {
+                        
+                    }
+                }
+            }
         }
 
         private object GetPropertyValue(Instance instance, PropertyInfo propertyInfo, PropertyType propertyType)
@@ -183,7 +205,7 @@ namespace LibRbxl
                 return PropertyType.Enumeration;
             if (propertyInfo.PropertyType.IsAssignableFrom(typeof(Instance)))
                 return PropertyType.Referent;
-            throw new ArgumentException("Property type does not match any Roblox property type.", nameof(propertyInfo));
+            throw new ArgumentException("Property parentType does not match any Roblox property parentType.", nameof(propertyInfo));
         }
 
         private bool CheckNoSerialize(PropertyInfo propertyInfo)
