@@ -8,11 +8,13 @@ namespace LibRbxl
 {
     public abstract class RobloxObject
     {
+        public RobloxPropertyCache PropertyCache { get; }
+
         protected RobloxObject()
         {
-            
+            PropertyCache = RobloxPropertyCache.FetchCacheForType(GetType());
         }
-        
+
         /*protected T GetPropertyOrDefault<T>(PropertyCollection properties, string name, T defaultValue)
         {
             if (properties.Contains(name))
