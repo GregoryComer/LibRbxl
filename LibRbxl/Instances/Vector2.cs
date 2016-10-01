@@ -48,6 +48,11 @@ namespace LibRbxl.Instances
             return new Vector2(v.X / divisor, v.Y / divisor);
         }
 
+        public static Vector2 operator /(float divisor, Vector2 v)
+        {
+            return new Vector2(divisor / v.X, divisor / v.Y);
+        }
+
         public static float Dot(Vector2 a, Vector2 b)
         {
             return a.X*b.X + a.Y*b.Y;
