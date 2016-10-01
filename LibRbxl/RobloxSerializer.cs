@@ -275,7 +275,7 @@ namespace LibRbxl
                 if (property.Name == propertyName)
                     return property;
             }
-            throw new InvalidOperationException($"No matching CLR type found for property \"{propertyName}\"."); // TODO This should add to unmanaged properties
+            return null;
         }
 
         private static string GetPropertyName(PropertyInfo propertyInfo)
