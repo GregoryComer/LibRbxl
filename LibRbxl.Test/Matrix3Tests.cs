@@ -23,6 +23,30 @@ namespace LibRbxl.Test
         }
 
         [Test]
+        public void Multiply()
+        {
+            var m1 = new Matrix3(3, -1, 0, 2, 5, 1, -7, 1, 3);
+            var m2 = new Matrix3(6, -1, 0, 0, 1, -2, 3, -8, 1);
+            var expected = new Matrix3(18, -4, 2, 15, -5, -9, -33, -16, 1);
+
+            var product = m1*m2;
+
+            Assert.AreEqual(expected, product);
+        }
+
+        [Test]
+        public void Multiply2()
+        {
+            var m1 = new Matrix3(1, 4, -1, 6, 1, 8, 2, 5, 1);
+            var m2 = new Matrix3(2, 0, 1, 7, 4, 2, 8, 1, 3);
+            var expected = new Matrix3(22, 15, 6, 83, 12, 32, 47, 21, 15);
+
+            var product = m1 * m2;
+
+            Assert.AreEqual(expected, product);
+        }
+
+        [Test]
         public void Determinant()
         {
             var m = new Matrix3(5, -2, 1, 0, 3, -1, 2, 0, 7);
