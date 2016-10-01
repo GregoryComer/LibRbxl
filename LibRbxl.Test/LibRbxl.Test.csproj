@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CFrameTests.cs" />
     <Compile Include="Matrix3Tests.cs" />
     <Compile Include="TransformationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
