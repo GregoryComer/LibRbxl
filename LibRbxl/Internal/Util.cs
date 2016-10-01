@@ -11,6 +11,9 @@ namespace LibRbxl.Internal
 {
     internal static class Util
     {
+        private const float Pi = (float) Math.PI;
+        private const float PiOver2 = (float) (Math.PI/2);
+
         public static readonly Encoding RobloxEncoding = Encoding.GetEncoding("ISO-8859-1");
 
         public static byte[] DeinterleaveBytes(byte[] data, int valueSize)
@@ -66,6 +69,50 @@ namespace LibRbxl.Internal
             return ReadInterleavedPropertyDataArrayHelper(reader, count, sizeof (int), bytes => (BrickColor)EndianAwareBitConverter.ToInt32(bytes, Endianness.Big));
         }
 
+        public static CFrame[] ReadCFrameArray(EndianAwareBinaryReader reader, int count)
+        {
+            var values = new CFrame[count];
+            var positions = new Vector3[count];
+            var matrices = new Matrix3[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                var specialMatrixType = reader.ReadByte();
+                if (specialMatrixType == 0)
+                {
+                    var r00 = reader.ReadSingle();
+                    var r01 = reader.ReadSingle();
+                    var r02 = reader.ReadSingle();
+                    var r10 = reader.ReadSingle();
+                    var r11 = reader.ReadSingle();
+                    var r12 = reader.ReadSingle();
+                    var r20 = reader.ReadSingle();
+                    var r21 = reader.ReadSingle();
+                    var r22 = reader.ReadSingle();
+                    matrices[i] = new Matrix3(r00, r01, r02, r10, r11, r12, r20, r21, r22);
+                }
+                else
+                {
+                    var angles = GetAnglesForSpecialMatrixType(specialMatrixType);
+                    matrices[i] = Matrix3.FromEulerAngles(angles);
+                }
+            }
+
+            var xValues = ReadFloatArray(reader, count);
+            var yValues = ReadFloatArray(reader, count);
+            var zValues = ReadFloatArray(reader, count);
+            for (var i = 0; i < count; i++)
+            {
+                positions[i] = new Vector3(xValues[i], yValues[i], zValues[i]);
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                values[i] = new CFrame(positions[i], matrices[i]);
+            }
+            return values;
+        }
+        
         public static Color3[] ReadColor3Array(EndianAwareBinaryReader reader, int count)
         {
             var rValues = ReadFloatArray(reader, count);
@@ -335,14 +382,147 @@ namespace LibRbxl.Internal
 
         public static void WriteBrickColorArray(EndianAwareBinaryWriter writer, BrickColor[] values)
         {
-            WriteInterleavedPropertyDataHelper(writer, values, sizeof(int), val => EndianAwareBitConverter.GetBytes((int)val));
+            WriteInterleavedPropertyDataHelper(writer, values, sizeof(int), val => EndianAwareBitConverter.GetBytes((int)val, Endianness.Big));
+        }
+
+        public static void WriteCFrameArray(EndianAwareBinaryWriter writer, CFrame[] values)
+        {
+            // Write matrix values
+            for (int i = 0; i < values.Length; i++)
+            {
+                var specialMatrixType = GetSpecialMatrixType(values[i]);
+                if (specialMatrixType != 0)
+                {
+                    writer.WriteByte(specialMatrixType);
+                }
+                else
+                {
+                    writer.WriteByte(0);
+                    writer.WriteSingle(values[i].Matrix.R00);
+                    writer.WriteSingle(values[i].Matrix.R01);
+                    writer.WriteSingle(values[i].Matrix.R02);
+                    writer.WriteSingle(values[i].Matrix.R10);
+                    writer.WriteSingle(values[i].Matrix.R11);
+                    writer.WriteSingle(values[i].Matrix.R12);
+                    writer.WriteSingle(values[i].Matrix.R20);
+                    writer.WriteSingle(values[i].Matrix.R21);
+                    writer.WriteSingle(values[i].Matrix.R22);
+                }
+            }
+            // Write position values
+            // TODO This could be made more efficient by creating a streaming method for writing interleaved arrays
+            var xValues = new float[values.Length];
+            var yValues = new float[values.Length];
+            var zValues = new float[values.Length];
+            for (var i = 0; i < values.Length; i++)
+            {
+                xValues[i] = values[i].Position.X;
+                yValues[i] = values[i].Position.Y;
+                zValues[i] = values[i].Position.Z;
+            }
+            WriteFloatArray(writer, xValues);
+            WriteFloatArray(writer, yValues);
+            WriteFloatArray(writer, zValues);
+        }
+
+        private static byte GetSpecialMatrixType(CFrame cFrame)
+        {
+            var eulerAngles = cFrame.Matrix.ToEulerAngles();
+
+            if (eulerAngles == new Vector3(0, 0, 0))
+                return 0x2;
+            if (eulerAngles == new Vector3(PiOver2, 0, 0))
+                return 0x3;
+            if (eulerAngles == new Vector3(-Pi, 0, 0))
+                return 0x5;
+            if (eulerAngles == new Vector3(-PiOver2, 0, 0))
+                return 0x6;
+            if (eulerAngles == new Vector3(-Pi, 0, -PiOver2))
+                return 0x7;
+            if (eulerAngles == new Vector3(PiOver2, PiOver2, 0))
+                return 0x9;
+            if (eulerAngles == new Vector3(0, 0, PiOver2))
+                return 0xA;
+            if (eulerAngles == new Vector3(-PiOver2, -PiOver2, 0))
+                return 0xC;
+            if (eulerAngles == new Vector3(-PiOver2, 0, -PiOver2))
+                return 0x0D;
+            if (eulerAngles == new Vector3(0, 0, -PiOver2))
+                return 0x19;
+            if (eulerAngles == new Vector3(0, -PiOver2, 0))
+                return 0x0E;
+            if (eulerAngles == new Vector3(PiOver2, -PiOver2, 0))
+                return 0x1B;
+            if (eulerAngles == new Vector3(PiOver2, 0, PiOver2))
+                return 0x10;
+            if (eulerAngles == new Vector3(Pi, 0, PiOver2))
+                return 0x1C;
+            if (eulerAngles == new Vector3(Pi, PiOver2, 0))
+                return 0x11;
+            if (eulerAngles == new Vector3(-PiOver2, PiOver2, 0))
+                return 0x1E;
+            if (eulerAngles == new Vector3(-Pi, 0, -Pi))
+                return 0x14;
+            if (eulerAngles == new Vector3(PiOver2, 0, -PiOver2))
+                return 0x1F;
+            if (eulerAngles == new Vector3(-PiOver2, 0, -Pi))
+                return 0x15;
+            if (eulerAngles == new Vector3(0, PiOver2, 0))
+                return 0x20;
+            if (eulerAngles == new Vector3(0, 0, -Pi))
+                return 0x17;
+            if (eulerAngles == new Vector3(-PiOver2, 0, PiOver2))
+                return 0x22;
+            if (eulerAngles == new Vector3(PiOver2, 0, -Pi))
+                return 0x18;
+            if (eulerAngles == new Vector3(-Pi, -PiOver2, 0))
+                return 0x23;
+            return 0x0;
+        }
+
+        private static Vector3 GetAnglesForSpecialMatrixType(byte specialMatrixType)
+        {
+            if (specialMatrixType == 0x2) return new Vector3(0, 0, 0);
+            if (specialMatrixType == 0x3) return new Vector3(PiOver2, 0, 0);
+            if (specialMatrixType == 0x5) return new Vector3(-Pi, 0, 0);
+            if (specialMatrixType == 0x6) return new Vector3(-PiOver2, 0, 0);
+            if (specialMatrixType == 0x7) return new Vector3(-Pi, 0, -PiOver2);
+            if (specialMatrixType == 0x9) return new Vector3(PiOver2, PiOver2, 0);
+            if (specialMatrixType == 0xA) return new Vector3(0, 0, PiOver2);
+            if (specialMatrixType == 0xC) return new Vector3(-PiOver2, -PiOver2, 0);
+            if (specialMatrixType == 0x0D) return new Vector3(-PiOver2, 0, -PiOver2);
+            if (specialMatrixType == 0x19) return new Vector3(0, 0, -PiOver2);
+            if (specialMatrixType == 0x0E) return new Vector3(0, -PiOver2, 0);
+            if (specialMatrixType == 0x1B) return new Vector3(PiOver2, -PiOver2, 0);
+            if (specialMatrixType == 0x10) return new Vector3(PiOver2, 0, PiOver2);
+            if (specialMatrixType == 0x1C) return new Vector3(Pi, 0, PiOver2);
+            if (specialMatrixType == 0x11) return new Vector3(Pi, PiOver2, 0);
+            if (specialMatrixType == 0x1E) return new Vector3(-PiOver2, PiOver2, 0);
+            if (specialMatrixType == 0x14) return new Vector3(-Pi, 0, -Pi);
+            if (specialMatrixType == 0x1F) return new Vector3(PiOver2, 0, -PiOver2);
+            if (specialMatrixType == 0x15) return new Vector3(-PiOver2, 0, -Pi);
+            if (specialMatrixType == 0x20) return new Vector3(0, PiOver2, 0);
+            if (specialMatrixType == 0x17) return new Vector3(0, 0, -Pi);
+            if (specialMatrixType == 0x22) return new Vector3(-PiOver2, 0, PiOver2);
+            if (specialMatrixType == 0x18) return new Vector3(PiOver2, 0, -Pi);
+            if (specialMatrixType == 0x23) return new Vector3(-Pi, -PiOver2, 0);
+            throw new ArgumentException("Unknown special matrix type.");
         }
 
         public static void WriteColor3Array(EndianAwareBinaryWriter writer, Color3[] values)
         {
+            // TODO This can be made more efficient
+
             var rValues = new float[values.Length];
             var gValues = new float[values.Length];
             var bValues = new float[values.Length];
+
+            for (var i = 0; i < values.Length; i++)
+            {
+                rValues[i] = values[i].R;
+                gValues[i] = values[i].G;
+                bValues[i] = values[i].B;
+            }
 
             WriteFloatArray(writer, rValues);
             WriteFloatArray(writer, gValues);
@@ -351,7 +531,7 @@ namespace LibRbxl.Internal
 
         public static void WriteEnumerationArray(EndianAwareBinaryWriter writer, int[] values)
         {
-            WriteInterleavedPropertyDataHelper(writer, values, sizeof(int), val => EndianAwareBitConverter.GetBytes(val));
+            WriteInterleavedPropertyDataHelper(writer, values, sizeof(int), val => EndianAwareBitConverter.GetBytes(val, Endianness.Big));
         }
 
         public static void WriteFacesArray(EndianAwareBinaryWriter writer, Faces[] values)
@@ -420,8 +600,10 @@ namespace LibRbxl.Internal
             var last = 0;
             for (var i = 0; i < values.Length; i++)
             {
-                var valBytes = EndianAwareBitConverter.GetBytes(values[i] - last, Endianness.Big);
-                last = values[i] - last;
+                var val = values[i] - last;
+                var transformed = TransformInt32(val);
+                var valBytes = EndianAwareBitConverter.GetBytes(transformed, Endianness.Big);
+                last = values[i];
                 Array.Copy(valBytes, 0, bytes, i * sizeof(int), sizeof(int));
             }
 

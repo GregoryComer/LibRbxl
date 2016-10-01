@@ -112,6 +112,11 @@ namespace LibRbxl.Instances
             });
         }
 
+        internal static Matrix3 FromEulerAngles(Vector3 angles)
+        {
+            return FromEulerAngles(angles.X, angles.Y, angles.Z);
+        }
+
         public static Matrix3 FromEulerAngles(float x, float y, float z) // 11, 12, 21, 22
         {
             return new Matrix3(new float[3,3]

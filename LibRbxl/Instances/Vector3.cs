@@ -61,7 +61,6 @@ namespace LibRbxl.Instances
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
         }
-
         public static Vector3 operator *(Vector3 v, Matrix3 m)
         {
             return new Vector3(v.X * m.R00 + v.Y * m.R01 + v.Z * m.R02,

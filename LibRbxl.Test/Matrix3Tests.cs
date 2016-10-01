@@ -111,5 +111,27 @@ namespace LibRbxl.Test
 
             Assert.AreEqual(expected, mat);
         }
+
+        [Test]
+        public void ToEulerAngles_Identity()
+        {
+            var m = Matrix3.Identity;
+            var expected = new Vector3(0, 0, 0);
+
+            var angles = m.ToEulerAngles();
+
+            Assert.AreEqual(expected, angles);
+        }
+
+        [Test]
+        public void ToEulerAngles()
+        {
+            var m = new Matrix3((float)-0.0294370614, (float)-0.0643211529, (float)0.997494996, (float)0.141997159, (float)-0.988075733, (float)-0.0595232993, (float)0.989429235, (float)0.1398893, (float)0.0382194705);
+            var expected = new Vector3(1, 1.5f, 2);
+
+            var angles = m.ToEulerAngles();
+
+            Assert.AreEqual(expected, angles);
+        }
     }
 }
