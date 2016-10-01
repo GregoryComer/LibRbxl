@@ -19,5 +19,15 @@
             Position = position;
             Matrix = matrix;
         }
+
+        public static CFrame FromAxisAngle(Vector3 axis, float angle)
+        {
+            return new CFrame(Vector3.Zero, Matrix3.FromAxisAngle(axis, angle));
+        }
+
+        public static CFrame FromEulerAngles(float x, float y, float z)
+        {
+            return new CFrame(Vector3.Zero, Matrix3.FromEulerAngles(x, y, z));
+        }
     }
 }
