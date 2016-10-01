@@ -16,6 +16,38 @@ namespace LibRbxl.Internal
 
         public static readonly Encoding RobloxEncoding = Encoding.GetEncoding("ISO-8859-1");
 
+        private static readonly Dictionary<byte, Matrix3> SpecialMatrixTypes = new Dictionary<byte, Matrix3>()
+            // TODO Look for remaining special matrix types
+        {
+            {0x2, Matrix3.FromEulerAngles(0, 0, 0)},
+            {0x3, Matrix3.FromEulerAngles(PiOver2, 0, 0)},
+            {0x5, Matrix3.FromEulerAngles(-Pi, 0, 0)},
+            {0x6, Matrix3.FromEulerAngles(-PiOver2, 0, 0)},
+            {0x7, Matrix3.FromEulerAngles(-Pi, 0, -PiOver2)},
+            {0x9, Matrix3.FromEulerAngles(PiOver2, PiOver2, 0)},
+            {0xA, Matrix3.FromEulerAngles(0, 0, PiOver2)},
+            {0xC, Matrix3.FromEulerAngles(-PiOver2, -PiOver2, 0)},
+            {0xD, Matrix3.FromEulerAngles(-PiOver2, 0, -PiOver2)},
+            {0xE, Matrix3.FromEulerAngles(0, -PiOver2, 0)},
+            {0x10, Matrix3.FromEulerAngles(PiOver2, 0, PiOver2)},
+            {0x11, Matrix3.FromEulerAngles(Pi, PiOver2, 0)},
+            {0x14, Matrix3.FromEulerAngles(-Pi, 0, -Pi)},
+            {0x15, Matrix3.FromEulerAngles(-PiOver2, 0, -Pi)},
+            {0x17, Matrix3.FromEulerAngles(0, 0, -Pi)},
+            {0x18, Matrix3.FromEulerAngles(PiOver2, 0, -Pi)},
+            {0x19, Matrix3.FromEulerAngles(0, 0, -PiOver2)},
+            {0x1B, Matrix3.FromEulerAngles(PiOver2, -PiOver2, 0)},
+            {0x1C, Matrix3.FromEulerAngles(Pi, 0, PiOver2)},
+            {0x1E, Matrix3.FromEulerAngles(-PiOver2, PiOver2, 0)},
+            {0x1F, Matrix3.FromEulerAngles(PiOver2, 0, -PiOver2)},
+            {0x20, Matrix3.FromEulerAngles(0, PiOver2, 0)},
+            {0x22, Matrix3.FromEulerAngles(-PiOver2, 0, PiOver2)},
+            {0x23, Matrix3.FromEulerAngles(-Pi, -PiOver2, 0)}
+        };
+
+        private static readonly Dictionary<Matrix3, byte> SpecialMatrixTypesReverse =
+            SpecialMatrixTypes.ToDictionary(n => n.Value, n => n.Key);
+
         public static byte[] DeinterleaveBytes(byte[] data, int valueSize)
         {
             if (data.Length % valueSize != 0)
@@ -93,8 +125,8 @@ namespace LibRbxl.Internal
                 }
                 else
                 {
-                    var angles = GetAnglesForSpecialMatrixType(specialMatrixType);
-                    matrices[i] = Matrix3.FromEulerAngles(angles);
+                    var mat = GetSpecialMatrix(specialMatrixType);
+                    matrices[i] = mat;
                 }
             }
 
@@ -427,86 +459,16 @@ namespace LibRbxl.Internal
 
         private static byte GetSpecialMatrixType(CFrame cFrame)
         {
-            var eulerAngles = cFrame.Matrix.ToEulerAngles();
-
-            if (eulerAngles == new Vector3(0, 0, 0))
-                return 0x2;
-            if (eulerAngles == new Vector3(PiOver2, 0, 0))
-                return 0x3;
-            if (eulerAngles == new Vector3(-Pi, 0, 0))
-                return 0x5;
-            if (eulerAngles == new Vector3(-PiOver2, 0, 0))
-                return 0x6;
-            if (eulerAngles == new Vector3(-Pi, 0, -PiOver2))
-                return 0x7;
-            if (eulerAngles == new Vector3(PiOver2, PiOver2, 0))
-                return 0x9;
-            if (eulerAngles == new Vector3(0, 0, PiOver2))
-                return 0xA;
-            if (eulerAngles == new Vector3(-PiOver2, -PiOver2, 0))
-                return 0xC;
-            if (eulerAngles == new Vector3(-PiOver2, 0, -PiOver2))
-                return 0x0D;
-            if (eulerAngles == new Vector3(0, 0, -PiOver2))
-                return 0x19;
-            if (eulerAngles == new Vector3(0, -PiOver2, 0))
-                return 0x0E;
-            if (eulerAngles == new Vector3(PiOver2, -PiOver2, 0))
-                return 0x1B;
-            if (eulerAngles == new Vector3(PiOver2, 0, PiOver2))
-                return 0x10;
-            if (eulerAngles == new Vector3(Pi, 0, PiOver2))
-                return 0x1C;
-            if (eulerAngles == new Vector3(Pi, PiOver2, 0))
-                return 0x11;
-            if (eulerAngles == new Vector3(-PiOver2, PiOver2, 0))
-                return 0x1E;
-            if (eulerAngles == new Vector3(-Pi, 0, -Pi))
-                return 0x14;
-            if (eulerAngles == new Vector3(PiOver2, 0, -PiOver2))
-                return 0x1F;
-            if (eulerAngles == new Vector3(-PiOver2, 0, -Pi))
-                return 0x15;
-            if (eulerAngles == new Vector3(0, PiOver2, 0))
-                return 0x20;
-            if (eulerAngles == new Vector3(0, 0, -Pi))
-                return 0x17;
-            if (eulerAngles == new Vector3(-PiOver2, 0, PiOver2))
-                return 0x22;
-            if (eulerAngles == new Vector3(PiOver2, 0, -Pi))
-                return 0x18;
-            if (eulerAngles == new Vector3(-Pi, -PiOver2, 0))
-                return 0x23;
+            if (SpecialMatrixTypesReverse.ContainsKey(cFrame.Matrix))
+                return SpecialMatrixTypesReverse[cFrame.Matrix];
             return 0x0;
         }
 
-        private static Vector3 GetAnglesForSpecialMatrixType(byte specialMatrixType)
+        private static Matrix3 GetSpecialMatrix(byte specialMatrixType)
         {
-            if (specialMatrixType == 0x2) return new Vector3(0, 0, 0);
-            if (specialMatrixType == 0x3) return new Vector3(PiOver2, 0, 0);
-            if (specialMatrixType == 0x5) return new Vector3(-Pi, 0, 0);
-            if (specialMatrixType == 0x6) return new Vector3(-PiOver2, 0, 0);
-            if (specialMatrixType == 0x7) return new Vector3(-Pi, 0, -PiOver2);
-            if (specialMatrixType == 0x9) return new Vector3(PiOver2, PiOver2, 0);
-            if (specialMatrixType == 0xA) return new Vector3(0, 0, PiOver2);
-            if (specialMatrixType == 0xC) return new Vector3(-PiOver2, -PiOver2, 0);
-            if (specialMatrixType == 0x0D) return new Vector3(-PiOver2, 0, -PiOver2);
-            if (specialMatrixType == 0x19) return new Vector3(0, 0, -PiOver2);
-            if (specialMatrixType == 0x0E) return new Vector3(0, -PiOver2, 0);
-            if (specialMatrixType == 0x1B) return new Vector3(PiOver2, -PiOver2, 0);
-            if (specialMatrixType == 0x10) return new Vector3(PiOver2, 0, PiOver2);
-            if (specialMatrixType == 0x1C) return new Vector3(Pi, 0, PiOver2);
-            if (specialMatrixType == 0x11) return new Vector3(Pi, PiOver2, 0);
-            if (specialMatrixType == 0x1E) return new Vector3(-PiOver2, PiOver2, 0);
-            if (specialMatrixType == 0x14) return new Vector3(-Pi, 0, -Pi);
-            if (specialMatrixType == 0x1F) return new Vector3(PiOver2, 0, -PiOver2);
-            if (specialMatrixType == 0x15) return new Vector3(-PiOver2, 0, -Pi);
-            if (specialMatrixType == 0x20) return new Vector3(0, PiOver2, 0);
-            if (specialMatrixType == 0x17) return new Vector3(0, 0, -Pi);
-            if (specialMatrixType == 0x22) return new Vector3(-PiOver2, 0, PiOver2);
-            if (specialMatrixType == 0x18) return new Vector3(PiOver2, 0, -Pi);
-            if (specialMatrixType == 0x23) return new Vector3(-Pi, -PiOver2, 0);
-            throw new ArgumentException("Unknown special matrix type.");
+            if (!SpecialMatrixTypes.ContainsKey(specialMatrixType))
+                throw new ArgumentException("Unknown special matrix type.");
+            return SpecialMatrixTypes[specialMatrixType];
         }
 
         public static void WriteColor3Array(EndianAwareBinaryWriter writer, Color3[] values)

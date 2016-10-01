@@ -105,20 +105,10 @@ namespace LibRbxl.Internal
                     var values = Util.ReadVector3Array(reader, typeHeader.InstanceCount);
                     return new PropertyBlock<Vector3>(name, dataType, typeId, values);
                 }
-                case PropertyType.CFrame: // TODO
+                case PropertyType.CFrame:
                 {
-                    //DEBUG
-                    for (var i = 0; i < typeHeader.InstanceCount; i++)
-                    {
-                        var isShort = reader.ReadByte() != 0;
-                        if (!isShort)
-                            reader.ReadBytes(9*sizeof (float));
-                    }
-                    for (var i = 0; i < typeHeader.InstanceCount; i++)
-                    {
-                        reader.ReadBytes(3 * sizeof(float));
-                    }
-                    return new PropertyBlock<CFrame>(name, dataType, typeId, new CFrame[typeHeader.InstanceCount]);
+                    var values = Util.ReadCFrameArray(reader, typeHeader.InstanceCount);
+                    return new PropertyBlock<CFrame>(name, dataType, typeId, values);
                     //throw new NotImplementedException();
                 }
                 case PropertyType.Enumeration:
@@ -274,17 +264,7 @@ namespace LibRbxl.Internal
                     var cFrameValues = values as CFrame[];
                     if (cFrameValues == null)
                         throw new InvalidOperationException("Property type does not match CLR data type.");
-                    // Util.WriteCFrameArray(writer, cFrameValues);
-                    
-                    // DEBUG
-                    for (var i = 0; i < values.Length; i++)
-                    {
-                        writer.WriteByte(0x2);
-                    }
-                    Util.WriteFloatArray(writer, values.Select(n => 0.0f).ToArray());
-                    Util.WriteFloatArray(writer, values.Select(n => 0.0f).ToArray());
-                    Util.WriteFloatArray(writer, values.Select(n => 0.0f).ToArray());
-
+                    Util.WriteCFrameArray(writer, cFrameValues);
                     break;
                 case PropertyType.Enumeration:
                     var enumValues = values as int[];

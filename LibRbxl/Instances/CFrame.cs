@@ -1,6 +1,8 @@
-﻿namespace LibRbxl.Instances
+﻿using System;
+
+namespace LibRbxl.Instances
 {
-    public struct CFrame
+    public struct CFrame : IEquatable<CFrame>
     {
         public Vector3 Position { get; }
         public Matrix3 Matrix { get; }
@@ -41,6 +43,40 @@
         public static CFrame FromEulerAngles(float x, float y, float z)
         {
             return new CFrame(Vector3.Zero, Matrix3.FromEulerAngles(x, y, z));
+        }
+
+        public bool Equals(CFrame other)
+        {
+            return Position.Equals(other.Position) && Matrix.Equals(other.Matrix);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is CFrame && Equals((CFrame) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Position.GetHashCode()*397) ^ Matrix.GetHashCode();
+            }
+        }
+
+        public static bool operator ==(CFrame left, CFrame right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(CFrame left, CFrame right)
+        {
+            return !left.Equals(right);
+        }
+
+        public override string ToString()
+        {
+            return $"{Position}, {{{Matrix.R00}, {Matrix.R01}, {Matrix.R02}, {Matrix.R10}, {Matrix.R11}, {Matrix.R12}, {Matrix.R20}, {Matrix.R21}, {Matrix.R22}}}";
         }
     }
 }

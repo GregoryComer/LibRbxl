@@ -148,9 +148,20 @@ namespace LibRbxl.Instances
 
         public override int GetHashCode()
         {
-            return _values?.GetHashCode() ?? 0;
+            unchecked
+            {
+                var hash = 17;
+                for (var i = 0; i < 3; i++)
+                {
+                    for (var j = 0; j < 3; j++)
+                    {
+                        hash = hash*23 + _values[i, j].GetHashCode();
+                    }
+                }
+                return hash;
+            }
         }
-
+        
         public static bool operator ==(Matrix3 left, Matrix3 right)
         {
             return left.Equals(right);

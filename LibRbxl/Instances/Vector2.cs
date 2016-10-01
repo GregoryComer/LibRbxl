@@ -57,5 +57,10 @@ namespace LibRbxl.Instances
         {
             return a.X*b.X + a.Y*b.Y;
         }
+
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
+        }
     }
 }
