@@ -1,2 +1,8 @@
 language: csharp
 solution: LibRbxl.sln
+install:
+  - nuget restore solution-name.sln
+  - nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release LibRbxl.sln
+  - mono ./testrunner/NUnit.Runners.3.4.1/tools/nunit-console.exe ./LibRbxl.Test/bin/Release/LibRbxl.Test.dll
