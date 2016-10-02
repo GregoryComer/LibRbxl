@@ -45,7 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFrameTests.cs" />
+    <Compile Include="FileTests.cs" />
     <Compile Include="Matrix3Tests.cs" />
+    <Compile Include="ParentChildTests.cs" />
     <Compile Include="TransformationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeHeaderTests.cs" />
@@ -55,6 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TestFiles\Baseplate.rbxl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibRbxl\LibRbxl.csproj">

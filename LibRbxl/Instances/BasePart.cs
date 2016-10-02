@@ -31,7 +31,11 @@
         public InputType LeftSurfaceInput { get; set; }
         public bool Locked { get; set; }
         public Material Material { get; set; }
-        public Vector3 Position { get; set; }
+        [RobloxIgnore]
+        public Vector3 Position {
+            get { return CFrame.Position; }
+            set { CFrame = new CFrame(value, CFrame.Matrix);}
+        }
         public float Reflectance { get; set; }
         [RobloxIgnore]
         public int ResizeIncrement { get; set; } // TODO: Is this serialized?
@@ -43,6 +47,7 @@
         public InputType RightSurfaceInput { get; set; }
         public Vector3 Rotation { get; set; }
         public Vector3 RotVelocity { get; set; }
+        [RobloxProperty("size", PropertyType.Vector3)]
         public Vector3 Size { get; set; }
         public float SpecificGravity { get; set; }
         public float TopParamA { get; set; }

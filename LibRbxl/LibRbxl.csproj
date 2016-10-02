@@ -95,6 +95,7 @@
     <Compile Include="Instances\ChangeHistoryService.cs" />
     <Compile Include="Instances\CharacterAppearance.cs" />
     <Compile Include="Instances\CharacterMesh.cs" />
+    <Compile Include="ChildCollection.cs" />
     <Compile Include="Instances\ConcurrencyModel.cs" />
     <Compile Include="Instances\CSGDictionaryService.cs" />
     <Compile Include="Instances\Font.cs" />
