@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace LibRbxl.Instances
 {
@@ -35,7 +36,12 @@ namespace LibRbxl.Instances
         public int Referent { get; set; }
             
         [RobloxIgnore]
-        public Dictionary<string, Property> UnmanagedProperties { get; } 
+        public Dictionary<string, Property> UnmanagedProperties { get; }
+
+        public Instance FindFirstChild(string name)
+        {
+            return Children.FirstOrDefault(n => n.Name == name);
+        }
 
         protected Instance()
         {

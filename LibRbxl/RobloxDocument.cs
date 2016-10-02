@@ -23,7 +23,10 @@ namespace LibRbxl
         public ReferentProvider ReferentProvider { get; }
         public Workspace Workspace => (Workspace) Children.FirstOrDefault(n => n is Workspace);
 
-        // public Workspace Workspace { get; }
+        public Instance FindFirstChild(string name)
+        {
+            return Children.FirstOrDefault(n => n.Name == name);
+        }
 
         private IEnumerable<Instance> GetInstanceEnumerator()
         {
