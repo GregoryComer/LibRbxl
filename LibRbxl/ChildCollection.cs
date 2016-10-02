@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using LibRbxl.Instances;
 
@@ -9,6 +10,9 @@ namespace LibRbxl
         private readonly List<Instance> _children;
         private readonly Instance _owner;
 
+        public event EventHandler<ChildAddedEventArgs> ChildAdded;
+        public event EventHandler<ChildRemovedEventArgs> ChildRemoved;
+         
         public ChildCollection(Instance owner)
         {
             _children = new List<Instance>();
@@ -29,6 +33,7 @@ namespace LibRbxl
             _children.Add(child);
             if (child.Parent != _owner)
                 child.Parent = _owner;
+            RaiseChildAdded(child);
         }
 
         public void Clear()
@@ -41,7 +46,7 @@ namespace LibRbxl
             return _children.Contains(child);
         }
 
-        public void CopyTo(Instance[] array, int arrayIndex)                
+        public void CopyTo(Instance[] array, int arrayIndex)
         {
             _children.CopyTo(array, arrayIndex);
         }
@@ -69,6 +74,40 @@ namespace LibRbxl
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        protected virtual void RaiseChildAdded(Instance child)
+        {
+            ChildAdded?.Invoke(this, new ChildAddedEventArgs(child));
+        }
+
+        protected virtual void RaiseChildRemoved(Instance child)
+        {
+            ChildRemoved?.Invoke(this, new ChildRemovedEventArgs(child));
+        }
+    }
+
+    public abstract class ChildModifiedEventArgs : EventArgs
+    {
+        public Instance Child { get; set; }
+
+        protected ChildModifiedEventArgs(Instance child)
+        {
+            Child = child;
+        }
+    }
+
+    public class ChildAddedEventArgs : ChildModifiedEventArgs
+    {
+        public ChildAddedEventArgs(Instance child) : base(child)
+        {
+        }
+    }
+
+    public class ChildRemovedEventArgs : ChildModifiedEventArgs
+    {
+        public ChildRemovedEventArgs(Instance child) : base(child)
+        {
         }
     }
 }

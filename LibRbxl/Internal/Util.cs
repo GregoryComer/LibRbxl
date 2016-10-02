@@ -637,10 +637,10 @@ namespace LibRbxl.Internal
             WriteFloatArray(writer, zValues);
         }
 
-        public static Tuple<int, int>[] BuildParentData(List<Instance> objects, ReferentProvider referentProvider)
+        public static Tuple<int, int>[] BuildParentData(Instance[] objects, ReferentProvider referentProvider)
         {
-            var pairs = new Tuple<int, int>[objects.Count];
-            for (var i = 0; i < objects.Count; i++)
+            var pairs = new Tuple<int, int>[objects.Length];
+            for (var i = 0; i < objects.Length; i++)
             {
                 pairs[i] = new Tuple<int, int>(referentProvider.GetReferent(objects[i]), objects[i].Parent != null ? referentProvider.GetReferent(objects[i].Parent) : -1);
             }

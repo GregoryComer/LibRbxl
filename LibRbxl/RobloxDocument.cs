@@ -14,14 +14,31 @@ namespace LibRbxl
     {
         public RobloxDocument()
         {
-            Objects = new List<Instance>();
+            Children = new ChildCollection(null);
             ReferentProvider = new ReferentProvider();
         }
 
-        public List<Instance> Objects { get; }
+        public ChildCollection Children { get; }
+        public IEnumerable<Instance> Instances => GetInstanceEnumerator(); 
         public ReferentProvider ReferentProvider { get; }
-        
+        public Workspace Workspace => (Workspace) Children.FirstOrDefault(n => n is Workspace);
+
         // public Workspace Workspace { get; }
+
+        private IEnumerable<Instance> GetInstanceEnumerator()
+        {
+            var queue = new Queue<Instance>(Children);
+            while (queue.Count > 0)
+            {
+                var child = queue.Dequeue();
+                yield return child;
+                if (child.Children.Count <= 0) continue;
+                foreach (var innerChild in child.Children)
+                    queue.Enqueue(innerChild);
+            }
+        }
+
+        #region Serialization
 
         public void Save(string filename)
         {
@@ -37,10 +54,11 @@ namespace LibRbxl
             var serializer = new RobloxSerializer(this);
 
             ReferentProvider.ClearCache(); // Clearing existing referent cache guarantees that referents won't be fragmented
-            var groupedObjects = Objects.GroupBy(n => n.ClassName).ToDictionary(n => n.Key, n => n.ToArray());
+            var instances = Instances.ToArray();
+            var typeGroups = instances.GroupBy(n => n.ClassName).ToDictionary(n => n.Key, n => n.ToArray());
 
-            var typeCount = groupedObjects.Count;
-            var objectCount = Objects.Count;
+            var typeCount = typeGroups.Count;
+            var objectCount = typeGroups.Aggregate(0, (acc, pair) => acc + pair.Value.Length);
             
             writer.WriteBytes(Signatures.Signature); // File signature
             writer.WriteInt32(typeCount); // Generic header values
@@ -51,7 +69,7 @@ namespace LibRbxl
             // Write type headers
             var typeHeaders = new TypeHeader[typeCount];
             var nextTypeId = 0;
-            foreach (var typeGroup in groupedObjects)
+            foreach (var typeGroup in typeGroups)
             {
                 var typeHeader = new TypeHeader(typeGroup.Key, nextTypeId, typeGroup.Value.Select(n => ReferentProvider.GetReferent(n)).ToArray()); // TODO Additional service data
                 typeHeaders[nextTypeId] = typeHeader;
@@ -62,7 +80,7 @@ namespace LibRbxl
             }
 
             // Write property data
-            foreach (var typeGroup in groupedObjects)
+            foreach (var typeGroup in typeGroups)
             {
                 var typeHeader = typeHeaders.First(n => n.Name == typeGroup.Key);
                 var instanceTypes = serializer.GetUniqueProperties(typeGroup.Value);
@@ -79,7 +97,7 @@ namespace LibRbxl
             }
 
             // Build parent child referent arrays
-            var parentData = Util.BuildParentData(Objects, ReferentProvider);
+            var parentData = Util.BuildParentData(instances, ReferentProvider);
             var parentDataBytes = Util.SerializeParentData(parentData);
             writer.WriteBytes(Signatures.ParentDataSignature);
             RobloxLZ4.WriteBlock(stream, parentDataBytes);
@@ -185,13 +203,18 @@ namespace LibRbxl
                 // Set parents
                 foreach (var pair in childParentPairs)
                 {
-                    if (pair.Item2 == -1) continue; // No parent
                     var child = document.ReferentProvider.GetCached(pair.Item1);
-                    var parent = document.ReferentProvider.GetCached(pair.Item2);
-                    child.Parent = parent;
+                    if (pair.Item2 == -1) // No parent
+                    {
+                        document.Children.Add(child);
+                    }
+                    else
+                    {
+                        var parent = document.ReferentProvider.GetCached(pair.Item2);
+                        child.Parent = parent;
+                    }
                 }
-
-                document.Objects.AddRange(instances);
+                
                 return document;
             }
                 /*catch (Exception ex)
@@ -210,5 +233,6 @@ namespace LibRbxl
             fileStream.Close();
             return document;
         }
+        #endregion
     }
 }

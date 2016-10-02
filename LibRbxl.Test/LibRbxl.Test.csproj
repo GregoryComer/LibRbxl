@@ -57,6 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TestFiles\1000 Parts.rbxl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestFiles\Baseplate.rbxl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

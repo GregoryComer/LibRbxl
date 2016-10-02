@@ -19,12 +19,23 @@ namespace LibRbxl.Test
         public void TestFile_Baseplate_Deserialize()
         {
             var doc = LoadTestFile("Baseplate.rbxl");
-            var workspace = doc.Objects.First(n => n is Workspace);
+            var workspace = doc.Workspace;
+            Assert.IsNotNull(workspace);
             var baseplate = (Part) workspace.Children.First(n => n.Name == "Baseplate");
             Assert.AreEqual(new Vector3(0, -10, 0), baseplate.Position);
             Assert.AreEqual(new Vector3(512, 20, 512), baseplate.Size);
             Assert.AreEqual(true, baseplate.Anchored);
             Assert.AreEqual(BrickColor.DarkStoneGrey, baseplate.BrickColor);
+        }
+
+        [Test]
+        public void TestFile_1000Parts_Deserialize()
+        {
+            var doc = LoadTestFile("1000 Parts.rbxl");
+            var workspace = doc.Workspace;
+            Assert.IsNotNull(workspace);
+            var partCount = workspace.Children.Count(n => n is Part);
+            Assert.AreEqual(1000, partCount);
         }
 
         private string GetTestFilePath(string filename)
