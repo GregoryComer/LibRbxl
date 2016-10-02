@@ -35,5 +35,6 @@ Contributions are welcome! If you're not inclined to dig into the code yourself,
 * Solid Modeling - Currently, solid modeling data is supported only through unmanaged properties (no parsing is done). Further work is needed to understand the format of solid modeling data and support it through the use of strongly typed properties on Instance classes.
 * Terrain - Similar to Solid Modeling, no parsing is done on terrain data. Further understanding of the format of terrain data is needed to implement proper support for the terrain data in the library.
 * Additional Instance Types and Properties - While the majority of Roblox classes and properties have a matching .NET class in the LibRbxl.Instances namespace, a number do not, particularly those that do not show up in the Roblox Studio Object Browser. These need to be documented and implemented.
+
 ## License
 LibRbxl is open source, and is licensed under the MIT License. The full text is included in the repository.
