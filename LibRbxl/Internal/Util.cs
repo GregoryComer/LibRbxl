@@ -428,15 +428,15 @@ namespace LibRbxl.Internal
                 else
                 {
                     writer.WriteByte(0);
-                    writer.WriteSingle(values[i].Matrix.R00);
-                    writer.WriteSingle(values[i].Matrix.R01);
-                    writer.WriteSingle(values[i].Matrix.R02);
-                    writer.WriteSingle(values[i].Matrix.R10);
-                    writer.WriteSingle(values[i].Matrix.R11);
-                    writer.WriteSingle(values[i].Matrix.R12);
-                    writer.WriteSingle(values[i].Matrix.R20);
-                    writer.WriteSingle(values[i].Matrix.R21);
-                    writer.WriteSingle(values[i].Matrix.R22);
+                    writer.WriteSingle(values[i].Matrix.M00);
+                    writer.WriteSingle(values[i].Matrix.M01);
+                    writer.WriteSingle(values[i].Matrix.M02);
+                    writer.WriteSingle(values[i].Matrix.M10);
+                    writer.WriteSingle(values[i].Matrix.M11);
+                    writer.WriteSingle(values[i].Matrix.M12);
+                    writer.WriteSingle(values[i].Matrix.M20);
+                    writer.WriteSingle(values[i].Matrix.M21);
+                    writer.WriteSingle(values[i].Matrix.M22);
                 }
             }
             // Write position values

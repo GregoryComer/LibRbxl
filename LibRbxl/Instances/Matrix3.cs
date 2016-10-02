@@ -4,24 +4,29 @@ using System.Web.UI;
 
 namespace LibRbxl.Instances
 {
-    public struct Matrix3 : IEquatable<Matrix3>
+    public class Matrix3 : IEquatable<Matrix3>
     {
         private const float Epsilon = 0.000001f;
 
         private readonly float[,] _values;
 
         public float[,] Values => _values;
-        public float R00 => _values[0, 0];
-        public float R01 => _values[0, 1];
-        public float R02 => _values[0, 2];
-        public float R10 => _values[1, 0];
-        public float R11 => _values[1, 1];
-        public float R12 => _values[1, 2];
-        public float R20 => _values[2, 0];
-        public float R21 => _values[2, 1];
-        public float R22 => _values[2, 2];
+        public float M00 => _values[0, 0];
+        public float M01 => _values[0, 1];
+        public float M02 => _values[0, 2];
+        public float M10 => _values[1, 0];
+        public float M11 => _values[1, 1];
+        public float M12 => _values[1, 2];
+        public float M20 => _values[2, 0];
+        public float M21 => _values[2, 1];
+        public float M22 => _values[2, 2];
 
         public static Matrix3 Identity => new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+
+        public Matrix3()
+        {
+            _values = Identity.Values;
+        }
 
         public Matrix3(float[,] values)
         {
@@ -43,28 +48,28 @@ namespace LibRbxl.Instances
 
         public float this[int row, int col] => _values[row, col];
 
-        public float Determinant => R00*R11*R22
-                                    + R01*R12*R20
-                                    + R02*R10*R21
-                                    - R20*R11*R02
-                                    - R21*R12*R00
-                                    - R22*R10*R01;
+        public float Determinant => M00*M11*M22
+                                    + M01*M12*M20
+                                    + M02*M10*M21
+                                    - M20*M11*M02
+                                    - M21*M12*M00
+                                    - M22*M10*M01;
 
         public Matrix3 Inverse => new Matrix3(
-            R11*R22-R12*R21,
-            R02*R21-R01*R22,
-            R01*R12-R02*R11,
-            R12*R20-R10*R22,
-            R00*R22-R02*R20,
-            R02*R10-R00*R12,
-            R10*R21-R11*R20,
-            R01*R20-R00*R21,
-            R00*R11-R01*R10
+            M11*M22-M12*M21,
+            M02*M21-M01*M22,
+            M01*M12-M02*M11,
+            M12*M20-M10*M22,
+            M00*M22-M02*M20,
+            M02*M10-M00*M12,
+            M10*M21-M11*M20,
+            M01*M20-M00*M21,
+            M00*M11-M01*M10
             ) * (1 / Determinant);
 
         public Vector3 ToEulerAngles()
         {
-            return new Vector3((float) Math.Atan2(-R12, R22), (float) Math.Asin(R02), (float) Math.Atan2(-R01, R00));
+            return new Vector3((float) Math.Atan2(-M12, M22), (float) Math.Asin(M02), (float) Math.Atan2(-M01, M00));
         }
 
         public static Matrix3 operator *(Matrix3 m1, Matrix3 m2)
@@ -85,12 +90,12 @@ namespace LibRbxl.Instances
 
         public static Matrix3 operator *(Matrix3 m1, float scale)
         {
-            return new Matrix3(m1.R00*scale, m1.R01*scale, m1.R02*scale, m1.R10*scale, m1.R11*scale, m1.R12*scale, m1.R20*scale, m1.R21*scale, m1.R22*scale);
+            return new Matrix3(m1.M00*scale, m1.M01*scale, m1.M02*scale, m1.M10*scale, m1.M11*scale, m1.M12*scale, m1.M20*scale, m1.M21*scale, m1.M22*scale);
         }
 
         public static Matrix3 operator *(float scale, Matrix3 m1)
         {
-            return new Matrix3(m1.R00 * scale, m1.R01 * scale, m1.R02 * scale, m1.R10 * scale, m1.R11 * scale, m1.R12 * scale, m1.R20 * scale, m1.R21 * scale, m1.R22 * scale);
+            return new Matrix3(m1.M00 * scale, m1.M01 * scale, m1.M02 * scale, m1.M10 * scale, m1.M11 * scale, m1.M12 * scale, m1.M20 * scale, m1.M21 * scale, m1.M22 * scale);
         }
 
         public static Matrix3 FromAxisAngle(Vector3 axis, float angle)
@@ -129,15 +134,15 @@ namespace LibRbxl.Instances
 
         public bool Equals(Matrix3 other)
         {
-            return Math.Abs(R00 - other.R00) < Epsilon &&
-                   Math.Abs(R01 - other.R01) < Epsilon &&
-                   Math.Abs(R02 - other.R02) < Epsilon &&
-                   Math.Abs(R10 - other.R10) < Epsilon &&
-                   Math.Abs(R11 - other.R11) < Epsilon &&
-                   Math.Abs(R12 - other.R12) < Epsilon &&
-                   Math.Abs(R20 - other.R20) < Epsilon &&
-                   Math.Abs(R21 - other.R21) < Epsilon &&
-                   Math.Abs(R22 - other.R22) < Epsilon;
+            return Math.Abs(M00 - other.M00) < Epsilon &&
+                   Math.Abs(M01 - other.M01) < Epsilon &&
+                   Math.Abs(M02 - other.M02) < Epsilon &&
+                   Math.Abs(M10 - other.M10) < Epsilon &&
+                   Math.Abs(M11 - other.M11) < Epsilon &&
+                   Math.Abs(M12 - other.M12) < Epsilon &&
+                   Math.Abs(M20 - other.M20) < Epsilon &&
+                   Math.Abs(M21 - other.M21) < Epsilon &&
+                   Math.Abs(M22 - other.M22) < Epsilon;
         }
 
         public override bool Equals(object obj)

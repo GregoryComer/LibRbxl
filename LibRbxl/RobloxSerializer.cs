@@ -408,7 +408,11 @@ namespace LibRbxl
 
             if (propertyType != PropertyType.Referent)
             {
-                value = (T) property.GetValue(instance);
+                var propertyValue = property.GetValue(instance);
+                if (propertyValue != null)
+                    value = (T) propertyValue;
+                else
+                    value = (T) GetDefaultValue(property, propertyType);
             }
             else
             {
@@ -423,6 +427,53 @@ namespace LibRbxl
                 return (T)(object)""; // TEMP
             else
                 throw new ArgumentException();
+        }
+
+        private object GetDefaultValue(PropertyInfo property, PropertyType propertyType)
+        {
+            var attrs = property.GetCustomAttributes<RobloxPropertyAttribute>().ToArray();
+            if (attrs.Length > 0 && attrs[0].DefaultValue != null)
+            {
+                return attrs[0].DefaultValue;
+            }
+
+            switch (propertyType)
+            {
+                case PropertyType.String:
+                    return "";
+                case PropertyType.Boolean:
+                    return false;
+                case PropertyType.Int32:
+                    return 0;
+                case PropertyType.Float:
+                    return 0.0f;
+                case PropertyType.Double:
+                    return 0.0;
+                case PropertyType.UDim2:
+                    return new UDim2(0, 0.0f, 0, 0.0f);
+                case PropertyType.Ray:
+                    return new Ray(Vector3.Zero, Vector3.Zero);
+                case PropertyType.Faces:
+                    return 0;
+                case PropertyType.Axis:
+                    return 0;
+                case PropertyType.BrickColor:
+                    return 0;
+                case PropertyType.Color3:
+                    return new Color3(0, 0, 0);
+                case PropertyType.Vector2:
+                    return Vector2.Zero;
+                case PropertyType.Vector3:
+                    return Vector3.Zero;
+                case PropertyType.CFrame:
+                    return new CFrame(Vector3.Zero, Matrix3.Identity);
+                case PropertyType.Enumeration:
+                    return 0;
+                case PropertyType.Referent:
+                    return -1;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(propertyType), propertyType, null);
+            }
         }
     }
 }

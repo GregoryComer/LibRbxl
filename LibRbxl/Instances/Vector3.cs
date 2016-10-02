@@ -63,16 +63,16 @@ namespace LibRbxl.Instances
         }
         public static Vector3 operator *(Vector3 v, Matrix3 m)
         {
-            return new Vector3(v.X * m.R00 + v.Y * m.R01 + v.Z * m.R02,
-                v.X * m.R10 + v.Y * m.R11 + v.Z * m.R12,
-                v.X * m.R20 + v.Y * m.R21 + v.Z * m.R22);
+            return new Vector3(v.X * m.M00 + v.Y * m.M01 + v.Z * m.M02,
+                v.X * m.M10 + v.Y * m.M11 + v.Z * m.M12,
+                v.X * m.M20 + v.Y * m.M21 + v.Z * m.M22);
         }
 
         public static Vector3 operator *(Matrix3 m, Vector3 v)
         {
-            return new Vector3(v.X * m.R00 + v.Y * m.R01 + v.Z * m.R02,
-                v.X * m.R10 + v.Y * m.R11 + v.Z * m.R12,
-                v.X * m.R20 + v.Y * m.R21 + v.Z * m.R22);
+            return new Vector3(v.X * m.M00 + v.Y * m.M01 + v.Z * m.M02,
+                v.X * m.M10 + v.Y * m.M11 + v.Z * m.M12,
+                v.X * m.M20 + v.Y * m.M21 + v.Z * m.M22);
         }
 
         public bool Equals(Vector3 other)

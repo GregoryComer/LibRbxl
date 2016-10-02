@@ -2,7 +2,7 @@
 
 namespace LibRbxl.Instances
 {
-    public struct CFrame : IEquatable<CFrame>
+    public class CFrame : IEquatable<CFrame>
     {
         public Vector3 Position { get; }
         public Matrix3 Matrix { get; }
@@ -25,6 +25,12 @@ namespace LibRbxl.Instances
         public CFrame(float x, float y, float z)
         {
             Position = new Vector3(x, y, z);
+            Matrix = Matrix3.Identity;
+        }
+
+        public CFrame()
+        {
+            Position = Vector3.Zero;
             Matrix = Matrix3.Identity;
         }
 
@@ -76,7 +82,7 @@ namespace LibRbxl.Instances
 
         public override string ToString()
         {
-            return $"{Position}, {{{Matrix.R00}, {Matrix.R01}, {Matrix.R02}, {Matrix.R10}, {Matrix.R11}, {Matrix.R12}, {Matrix.R20}, {Matrix.R21}, {Matrix.R22}}}";
+            return $"{Position}, {{{Matrix.M00}, {Matrix.M01}, {Matrix.M02}, {Matrix.M10}, {Matrix.M11}, {Matrix.M12}, {Matrix.M20}, {Matrix.M21}, {Matrix.M22}}}";
         }
     }
 }
