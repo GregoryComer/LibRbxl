@@ -14,7 +14,7 @@ doc.Save("Example.rbxl");
 Open a file and count the number of parts.
 ```csharp
 var doc = RobloxDocument.FromFile("Example2.rbxl");
-var partCount = doc.Instance.Count(n => n Is Part);
+var partCount = doc.Instances.Count(n => n Is Part);
 ```
 Create document from scratch.
 ```csharp
