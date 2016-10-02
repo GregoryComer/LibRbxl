@@ -1,3 +1,6 @@
+# LibRbxl - A software library for working with .rbxl files.
+
+[![Build Status](https://travis-ci.org/GregoryComer/LibRbxl.svg?branch=master)](https://travis-ci.org/GregoryComer/LibRbxl)
 ## About
 LibRbxl is software library targeting .NET 4.5 and that provides an easy way to read and write Roblox .rbxl files.
 
