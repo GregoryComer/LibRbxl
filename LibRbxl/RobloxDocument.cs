@@ -177,14 +177,13 @@ namespace LibRbxl
                 var instances = new List<Instance>(objectCount);
                 var propertyCollections = new List<PropertyCollection>();
 
-                // Create instances for described objects, set referents
+                // Create instances for described objects
                 foreach (var type in typeHeaders)
                 {
                     for (var i = 0; i < type.InstanceCount; i++)
                     {
                         var instance = InstanceFactory.Create(type.Name);
                         var referent = type.Referents[i];
-                        instance.Referent = referent;
                         document.ReferentProvider.Add(instance, referent);
                         instances.Add(instance);
 

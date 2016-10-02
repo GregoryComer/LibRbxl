@@ -31,9 +31,6 @@ namespace LibRbxl.Instances
 
         [RobloxIgnore]
         public ChildCollection Children { get; }
-
-        [RobloxIgnore]
-        public int Referent { get; set; }
             
         [RobloxIgnore]
         public Dictionary<string, Property> UnmanagedProperties { get; }
