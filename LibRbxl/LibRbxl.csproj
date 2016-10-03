@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorSequenceProperty.cs" />
     <Compile Include="DoubleProperty.cs" />
     <Compile Include="EndianAwareBinaryReader.cs" />
     <Compile Include="EndianAwareBinaryWriter.cs" />
@@ -107,6 +108,9 @@
     <Compile Include="Instances\FormFactor.cs" />
     <Compile Include="Instances\Hole.cs" />
     <Compile Include="Instances\InstanceFactory.cs" />
+    <Compile Include="Instances\PhysicalProperties.cs" />
+    <Compile Include="Internal\NumberRangeProperty.cs" />
+    <Compile Include="Internal\PhysicalPropertiesProperty.cs" />
     <Compile Include="Internal\PropertyFactory.cs" />
     <Compile Include="Internal\Signatures.cs" />
     <Compile Include="Internal\PropertyBlock.cs" />
@@ -116,6 +120,7 @@
     <Compile Include="Instances\KeyframeSequence.cs" />
     <Compile Include="Instances\Motor6D.cs" />
     <Compile Include="Instances\PartOperation.cs" />
+    <Compile Include="NumberSequenceProperty.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="PropertyBlockFactory.cs" />
     <Compile Include="RobloxLZ4.cs" />

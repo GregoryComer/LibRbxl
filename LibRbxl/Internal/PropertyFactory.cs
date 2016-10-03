@@ -41,6 +41,14 @@ namespace LibRbxl.Internal
                     return new EnumerationProperty(name, (int)value);
                 case PropertyType.Referent:
                     return new ReferentProperty(name, (int)value);
+                case PropertyType.NumberSequence:
+                    return new NumberSequenceProperty(name, (NumberSequence)value);
+                case PropertyType.ColorSequence:
+                    return new ColorSequenceProperty(name, (ColorSequence)value);
+                case PropertyType.NumberRange:
+                    return new NumberRangeProperty(name, (NumberRange)value);
+                case PropertyType.PhysicalProperties:
+                    return new PhysicalPropertiesProperty(name, (PhysicalProperties)value);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(propertyType), propertyType, null);
             }

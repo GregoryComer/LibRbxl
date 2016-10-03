@@ -67,6 +67,10 @@ namespace LibRbxl
         Vector3 = 0xE,
         CFrame = 0x10,
         Enumeration = 0x12,
-        Referent = 0x13
+        Referent = 0x13,
+        NumberSequence = 0x15,
+        ColorSequence = 0x16,
+        NumberRange = 0x17,
+        PhysicalProperties = 0x19
     }
 }

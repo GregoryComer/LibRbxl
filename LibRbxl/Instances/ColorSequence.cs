@@ -1,6 +1,9 @@
-﻿namespace LibRbxl.Instances
+﻿using System;
+using System.Linq;
+
+namespace LibRbxl.Instances
 {
-    public struct ColorSequence
+    public struct ColorSequence : IEquatable<ColorSequence>
     {
         public ColorSequenceKeypoint[] Keypoints { get; }
 
@@ -18,9 +21,37 @@
         {
             Keypoints = keypoints;
         }
+
+        public bool Equals(ColorSequence other)
+        {
+            if (Keypoints == null && other.Keypoints == null) return true;
+            if (Keypoints == null || other.Keypoints == null) return false;
+            return Keypoints.SequenceEqual(other.Keypoints);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is ColorSequence && Equals((ColorSequence) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Keypoints != null ? Keypoints.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(ColorSequence left, ColorSequence right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ColorSequence left, ColorSequence right)
+        {
+            return !left.Equals(right);
+        }
     }
 
-    public struct ColorSequenceKeypoint
+    public struct ColorSequenceKeypoint : IEquatable<ColorSequenceKeypoint>
     {
         public float Time { get; }
         public Color3 Value { get; }
@@ -29,6 +60,35 @@
         {
             Time = time;
             Value = value;
+        }
+
+        public bool Equals(ColorSequenceKeypoint other)
+        {
+            return Time.Equals(other.Time) && Value.Equals(other.Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is ColorSequenceKeypoint && Equals((ColorSequenceKeypoint) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Time.GetHashCode()*397) ^ Value.GetHashCode();
+            }
+        }
+
+        public static bool operator ==(ColorSequenceKeypoint left, ColorSequenceKeypoint right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ColorSequenceKeypoint left, ColorSequenceKeypoint right)
+        {
+            return !left.Equals(right);
         }
     }
 }

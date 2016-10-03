@@ -109,7 +109,6 @@ namespace LibRbxl.Internal
                 {
                     var values = Util.ReadCFrameArray(reader, typeHeader.InstanceCount);
                     return new PropertyBlock<CFrame>(name, dataType, typeId, values);
-                    //throw new NotImplementedException();
                 }
                 case PropertyType.Enumeration:
                 {
@@ -120,6 +119,26 @@ namespace LibRbxl.Internal
                 {
                     var values = Util.ReadReferentArray(reader, typeHeader.InstanceCount);
                     return new PropertyBlock<int>(name, dataType, typeId, values);
+                }
+                case PropertyType.NumberSequence:
+                {
+                    var values = Util.ReadNumberSequenceArray(reader, typeHeader.InstanceCount);
+                    return new PropertyBlock<NumberSequence>(name, dataType, typeId, values);
+                }
+                case PropertyType.ColorSequence:
+                {
+                    var values = Util.ReadColorSequenceArray(reader, typeHeader.InstanceCount);
+                    return new PropertyBlock<ColorSequence>(name, dataType, typeId, values);
+                }
+                case PropertyType.NumberRange:
+                {
+                    var values = Util.ReadNumberRangeArray(reader, typeHeader.InstanceCount);
+                    return new PropertyBlock<NumberRange>(name, dataType, typeId, values);
+                }
+                case PropertyType.PhysicalProperties:
+                {
+                    var values = Util.ReadPhysicalPropertiesArray(reader, typeHeader.InstanceCount);
+                    return new PropertyBlock<PhysicalProperties>(name, dataType, typeId, values);
                 }
                 default:
                 {
@@ -278,8 +297,32 @@ namespace LibRbxl.Internal
                         throw new InvalidOperationException("Property type does not match CLR data type.");
                     Util.WriteReferentArray(writer, refValues);
                     break;
+                case PropertyType.NumberSequence:
+                    var numberSequenceValues = values as NumberSequence[];
+                    if (numberSequenceValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteNumberSequenceArray(writer, numberSequenceValues);
+                    break;
+                case PropertyType.ColorSequence:
+                    var colorSequenceValues = values as ColorSequence[];
+                    if (colorSequenceValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteColorSequenceArray(writer, colorSequenceValues);
+                    break;
+                case PropertyType.NumberRange:
+                    var numberRangeValues = values as NumberRange[];
+                    if (numberRangeValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteNumberRangeArray(writer, numberRangeValues);
+                    break;
+                case PropertyType.PhysicalProperties:
+                    var physicalPropertiesValues = values as PhysicalProperties[];
+                    if (physicalPropertiesValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WritePhysicalPropertiesArray(writer, physicalPropertiesValues);
+                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentException("Unknown Roblox data type.");
             }
         }
     }

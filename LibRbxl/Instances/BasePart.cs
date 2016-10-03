@@ -2,6 +2,11 @@
 {
     public abstract class BasePart : PVInstance
     {
+        protected BasePart()
+        {
+            CustomPhysicalProperties = new PhysicalProperties(false);
+        }
+
         public bool Anchored { get; set; }
         public float BackParamA { get; set; }
         public float BackParamB { get; set; }
@@ -14,13 +19,9 @@
         public BrickColor BrickColor { get; set; }
         public CFrame CFrame { get; set; }
         public bool CanCollide { get; set; }
-        public float Density { get; set; }
-        public float Elasticity { get; set; }
-        public float ElasticityWeight { get; set; }
+        public PhysicalProperties CustomPhysicalProperties { get; set; }
         [RobloxProperty("formFactorRaw", PropertyType.Enumeration)] // Documentation has this as a member of FormFactorPart, which is a descendent of BasePart, but I'm seeing on Parts. Need to look more into this. TODO
         public FormFactor FormFactor { get; set; }
-        public float Friction { get; set; }
-        public float FrictionWeight { get; set; }
         public float FrontParamA { get; set; }
         public float FrontParamB { get; set; }
         public SurfaceType FrontSurface { get; set; }

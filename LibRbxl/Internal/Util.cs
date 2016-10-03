@@ -158,6 +158,26 @@ namespace LibRbxl.Internal
             return colorValues;
         }
 
+        public static ColorSequence ReadColorSequence(EndianAwareBinaryReader reader)
+        {
+            var keypointCount = reader.ReadInt32();
+            var keypoints = new ColorSequenceKeypoint[keypointCount];
+            for (var i = 0; i < keypointCount; i++)
+            {
+                var time = reader.ReadSingle();
+                var r = reader.ReadSingle();
+                var g = reader.ReadSingle();
+                var b = reader.ReadSingle();
+                keypoints[i] = new ColorSequenceKeypoint(time, new Color3(r, g, b));
+            }
+            return new ColorSequence(keypoints);
+        }
+
+        public static ColorSequence[] ReadColorSequenceArray(EndianAwareBinaryReader reader, int count)
+        {
+            return ReadPropertyDataArrayHelper(reader, count, ReadColorSequence);
+        }
+
         public static double[] ReadDoubleArray(EndianAwareBinaryReader reader, int count)
         {
             return ReadPropertyDataArrayHelper(reader, count, r => r.ReadDouble());
@@ -198,6 +218,18 @@ namespace LibRbxl.Internal
             var stringLength = reader.ReadInt32();
             var stringBytes = reader.ReadBytes(stringLength);
             return RobloxEncoding.GetString(stringBytes);
+        }
+
+        public static NumberRange ReadNumberRange(EndianAwareBinaryReader reader)
+        {
+            var min = reader.ReadSingle();
+            var max = reader.ReadSingle();
+            return new NumberRange(min, max);
+        }
+
+        public static NumberRange[] ReadNumberRangeArray(EndianAwareBinaryReader reader, int count)
+        {
+            return ReadPropertyDataArrayHelper(reader, count, ReadNumberRange);
         }
 
         public static Tuple<int, int>[] ReadParentData(byte[] data) // Tuple format is (Child, Parent)
@@ -275,7 +307,53 @@ namespace LibRbxl.Internal
 
             return values;
         }
-        
+
+        public static NumberSequence ReadNumberSequence(EndianAwareBinaryReader reader)
+        {
+            var keypointCount = reader.ReadInt32();
+            var keypoints = new NumberSequenceKeypoint[keypointCount];
+
+            for (var i = 0; i < keypointCount; i++)
+            {
+                var time = reader.ReadSingle();
+                var value = reader.ReadSingle();
+                var envelope = reader.ReadSingle();
+                keypoints[i] = new NumberSequenceKeypoint(time, value, envelope);
+            }
+
+            return new NumberSequence(keypoints);
+        }
+
+        public static NumberSequence[] ReadNumberSequenceArray(EndianAwareBinaryReader reader, int count)
+        {
+            var values = ReadPropertyDataArrayHelper(reader, count, ReadNumberSequence);
+            return values;
+        }
+
+        public static PhysicalProperties ReadPhysicalProperties(EndianAwareBinaryReader reader)
+        {
+            var enabled = (reader.ReadByte() != 0);
+            if (enabled)
+            {
+                var density = reader.ReadSingle();
+                var friction = reader.ReadSingle();
+                var elasticity = reader.ReadSingle();
+                var frictionWeight = reader.ReadSingle();
+                var elasticityWeight = reader.ReadSingle();
+                return new PhysicalProperties(density, friction, elasticity, frictionWeight, elasticityWeight);
+            }
+            else
+            {
+                return new PhysicalProperties(false);
+            }
+        }
+
+        public static PhysicalProperties[] ReadPhysicalPropertiesArray(EndianAwareBinaryReader reader, int count)
+        {
+            return ReadPropertyDataArrayHelper(reader, count, ReadPhysicalProperties);
+        }
+
+
         public static string[] ReadStringArray(EndianAwareBinaryReader reader, int count)
         {
             return ReadPropertyDataArrayHelper(reader, count, ReadLengthPrefixedString);
@@ -489,6 +567,23 @@ namespace LibRbxl.Internal
             WriteFloatArray(writer, bValues);
         }
 
+        public static void WriteColorSequence(EndianAwareBinaryWriter writer, ColorSequence sequence)
+        {
+            writer.WriteInt32(sequence.Keypoints.Length);
+            for (var i = 0; i < sequence.Keypoints.Length; i++)
+            {
+                writer.WriteSingle(sequence.Keypoints[i].Time);
+                writer.WriteSingle(sequence.Keypoints[i].Value.R);
+                writer.WriteSingle(sequence.Keypoints[i].Value.G);
+                writer.WriteSingle(sequence.Keypoints[i].Value.B);
+            }
+        }
+
+        public static void WriteColorSequenceArray(EndianAwareBinaryWriter writer, ColorSequence[] values)
+        {
+            WritePropertyDataHelper(writer, values, WriteColorSequence);
+        }
+
         public static void WriteEnumerationArray(EndianAwareBinaryWriter writer, int[] values)
         {
             WriteInterleavedPropertyDataHelper(writer, values, sizeof(int), val => EndianAwareBitConverter.GetBytes(val, Endianness.Big));
@@ -542,6 +637,51 @@ namespace LibRbxl.Internal
             writer.WriteBytes(stringBytes);
         }
 
+        public static void WriteNumberRange(EndianAwareBinaryWriter writer, NumberRange range)
+        {
+            writer.WriteSingle(range.Min);
+            writer.WriteSingle(range.Max);
+        }
+
+        public static void WriteNumberRangeArray(EndianAwareBinaryWriter writer, NumberRange[] values)
+        {
+            WritePropertyDataHelper(writer, values, WriteNumberRange);
+        }
+
+        public static void WriteNumberSequence(EndianAwareBinaryWriter writer, NumberSequence sequence)
+        {
+            writer.WriteInt32(sequence.Keypoints.Length);
+            for (var i = 0; i < sequence.Keypoints.Length; i++)
+            {
+                writer.WriteSingle(sequence.Keypoints[i].Time);
+                writer.WriteSingle(sequence.Keypoints[i].Value);
+                writer.WriteSingle(sequence.Keypoints[i].Envelope);
+            }
+        }
+
+        public static void WriteNumberSequenceArray(EndianAwareBinaryWriter writer, NumberSequence[] sequences)
+        {
+            WritePropertyDataHelper(writer, sequences, WriteNumberSequence);
+        }
+
+        public static void WritePhysicalProperties(EndianAwareBinaryWriter writer, PhysicalProperties value)
+        {
+            writer.WriteByte((byte) (value.Enabled ? 1 : 0));
+            if (value.Enabled)
+            {
+                writer.WriteSingle(value.Density);
+                writer.WriteSingle(value.Friction);
+                writer.WriteSingle(value.Elasticity);
+                writer.WriteSingle(value.FrictionWeight);
+                writer.WriteSingle(value.ElasticityWeight);
+            }
+        }
+
+        public static void WritePhysicalPropertiesArray(EndianAwareBinaryWriter writer, PhysicalProperties[] values)
+        {
+            WritePropertyDataHelper(writer, values, WritePhysicalProperties);
+        }
+
         public static void WritePropertyDataHelper<T>(EndianAwareBinaryWriter writer, T[] values, Action<EndianAwareBinaryWriter, T> writeProc)
         {
             foreach (var val in values)
@@ -571,16 +711,16 @@ namespace LibRbxl.Internal
             writer.WriteBytes(interleaved);
         }
 
+        public static void WriteStringArray(EndianAwareBinaryWriter writer, string[] values)
+        {
+            WritePropertyDataHelper(writer, values, WriteLengthPrefixedString);
+        }
+
         private static void WriteVector3(EndianAwareBinaryWriter writer, Vector3 val)
         {
             writer.WriteSingle(val.X);
             writer.WriteSingle(val.Y);
             writer.WriteSingle(val.Z);
-        }
-
-        public static void WriteStringArray(EndianAwareBinaryWriter writer, string[] values)
-        {
-            WritePropertyDataHelper(writer, values, WriteLengthPrefixedString);
         }
 
         public static void WriteUDim2Array(EndianAwareBinaryWriter writer, UDim2[] values)
@@ -675,3 +815,4 @@ namespace LibRbxl.Internal
         }
     }
 }
+
