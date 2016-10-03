@@ -135,6 +135,11 @@ namespace LibRbxl.Internal
                     var values = Util.ReadNumberRangeArray(reader, typeHeader.InstanceCount);
                     return new PropertyBlock<NumberRange>(name, dataType, typeId, values);
                 }
+                case PropertyType.Rectangle:
+                {
+                        var values = Util.ReadRectangleArray(reader, typeHeader.InstanceCount);
+                        return new PropertyBlock<Rectangle>(name, dataType, typeId, values);
+                    }
                 case PropertyType.PhysicalProperties:
                 {
                     var values = Util.ReadPhysicalPropertiesArray(reader, typeHeader.InstanceCount);
@@ -314,6 +319,12 @@ namespace LibRbxl.Internal
                     if (numberRangeValues == null)
                         throw new InvalidOperationException("Property type does not match CLR data type.");
                     Util.WriteNumberRangeArray(writer, numberRangeValues);
+                    break;
+                case PropertyType.Rectangle:
+                    var rectangleValues = values as Rectangle[];
+                    if (rectangleValues == null)
+                        throw new InvalidOperationException("Property type does not match CLR data type.");
+                    Util.WriteRectangleArray(writer, rectangleValues);
                     break;
                 case PropertyType.PhysicalProperties:
                     var physicalPropertiesValues = values as PhysicalProperties[];

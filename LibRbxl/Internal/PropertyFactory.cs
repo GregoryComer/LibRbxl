@@ -47,6 +47,8 @@ namespace LibRbxl.Internal
                     return new ColorSequenceProperty(name, (ColorSequence)value);
                 case PropertyType.NumberRange:
                     return new NumberRangeProperty(name, (NumberRange)value);
+                case PropertyType.Rectangle:
+                    return new RectangleProperty(name, (Rectangle)value);
                 case PropertyType.PhysicalProperties:
                     return new PhysicalPropertiesProperty(name, (PhysicalProperties)value);
                 default:

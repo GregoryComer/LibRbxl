@@ -10,6 +10,6 @@
         public Vector2 ImageRectSize { get; set; }
         public float ImageTransparency { get; set; }
         public ScaleType ScaleType { get; set; }
-        public Rect SliceCenter { get; set; } 
+        public Rectangle SliceCenter { get; set; } 
     }
 }

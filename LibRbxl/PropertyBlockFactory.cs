@@ -42,6 +42,16 @@ namespace LibRbxl
                     return new PropertyBlock<int>(name, type, typeId, capacity);
                 case PropertyType.Referent:
                     return new PropertyBlock<int>(name, type, typeId, capacity);
+                case PropertyType.NumberSequence:
+                    return new PropertyBlock<NumberSequence>(name, type, typeId, capacity);
+                case PropertyType.ColorSequence:
+                    return new PropertyBlock<ColorSequence>(name, type, typeId, capacity);
+                case PropertyType.NumberRange:
+                    return new PropertyBlock<NumberRange>(name, type, typeId, capacity);
+                case PropertyType.Rectangle:
+                    return new PropertyBlock<Rectangle>(name, type, typeId, capacity);
+                case PropertyType.PhysicalProperties:
+                    return new PropertyBlock<PhysicalProperties>(name, type, typeId, capacity);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

@@ -6,6 +6,7 @@
 
         // TODO: Serialize terrain data
         public bool IsSmooth { get; set; }
+        [RobloxIgnore] // TODO Is this serialized?
         public Region3int16 MaxExtents { get; set; }
         public Color3 WaterColor { get; set; }
         public float WaterTransparency { get; set; }

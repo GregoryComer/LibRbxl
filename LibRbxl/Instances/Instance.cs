@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace LibRbxl.Instances
 {
-    public abstract class Instance
+    public abstract class Instance : IInstance
     {
         private Instance _parent;
         public bool Archivable { get; set; }

@@ -107,11 +107,14 @@
     <Compile Include="Instances\FontSize.cs" />
     <Compile Include="Instances\FormFactor.cs" />
     <Compile Include="Instances\Hole.cs" />
+    <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\InstanceFactory.cs" />
     <Compile Include="Instances\PhysicalProperties.cs" />
+    <Compile Include="Instances\Rectangle.cs" />
     <Compile Include="Internal\NumberRangeProperty.cs" />
     <Compile Include="Internal\PhysicalPropertiesProperty.cs" />
     <Compile Include="Internal\PropertyFactory.cs" />
+    <Compile Include="Internal\ReflectionMappingManager.cs" />
     <Compile Include="Internal\Signatures.cs" />
     <Compile Include="Internal\PropertyBlock.cs" />
     <Compile Include="Internal\TypeHeader.cs" />
@@ -123,6 +126,7 @@
     <Compile Include="NumberSequenceProperty.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="PropertyBlockFactory.cs" />
+    <Compile Include="RectangleProperty.cs" />
     <Compile Include="RobloxLZ4.cs" />
     <Compile Include="Instances\MeshType.cs" />
     <Compile Include="Instances\MouseBehavior.cs" />
@@ -255,7 +259,6 @@
     <Compile Include="Instances\PVInstance.cs" />
     <Compile Include="Instances\Ray.cs" />
     <Compile Include="Instances\RayValue.cs" />
-    <Compile Include="Instances\Rect.cs" />
     <Compile Include="Instances\Region3int16.cs" />
     <Compile Include="Instances\RemoteEvent.cs" />
     <Compile Include="Instances\RemoteFunction.cs" />

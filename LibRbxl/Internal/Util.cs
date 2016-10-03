@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using LibRbxl.Instances;
+using Rectangle = LibRbxl.Instances.Rectangle;
 
 namespace LibRbxl.Internal
 {
@@ -188,15 +190,16 @@ namespace LibRbxl.Internal
             return ReadPropertyDataArrayHelper(reader, count, r => (Faces)r.ReadByte());
         }
 
-        public static float[] ReadFloatArray(EndianAwareBinaryReader reader, int count)
+        public static float[] ReadFloatArray(EndianAwareBinaryReader reader, int count, bool interleave = true)
         {
-            var interleaved = reader.ReadBytes(count * sizeof(float));
-            var deinterleaved = DeinterleaveBytes(interleaved, sizeof(float));
+            var data = reader.ReadBytes(count * sizeof(float));
+            if (interleave)
+                data = DeinterleaveBytes(data, sizeof(float));
             var values = new float[count];
 
             for (var i = 0; i < count; i++)
             {
-                values[i] = ReverseTransformFloat(deinterleaved, i * sizeof(float));
+                values[i] = ReverseTransformFloat(data, i * sizeof(float));
             }
 
             return values;
@@ -256,6 +259,20 @@ namespace LibRbxl.Internal
         public static Ray[] ReadRayArray(EndianAwareBinaryReader reader, int count)
         {
             return ReadPropertyDataArrayHelper(reader, count, r => new Ray(ReadVector3(reader), ReadVector3(reader)));
+        }
+
+        public static Rectangle[] ReadRectangleArray(EndianAwareBinaryReader reader, int count)
+        {
+            var xMinValues = ReadFloatArray(reader, count);
+            var xMaxValues = ReadFloatArray(reader, count);
+            var yMinValues = ReadFloatArray(reader, count);
+            var yMaxValues = ReadFloatArray(reader, count);
+            var values = new Rectangle[count];
+            for (var i = 0; i < count; i++)
+            {
+                values[i] = new Rectangle(xMinValues[i], xMaxValues[i], yMinValues[i], yMaxValues[i]);
+            }
+            return values;
         }
 
         public static int[] ReadReferentArray(EndianAwareBinaryReader reader, int count)
@@ -691,6 +708,14 @@ namespace LibRbxl.Internal
         public static void WriteRayArray(EndianAwareBinaryWriter writer, Ray[] values)
         {
             WritePropertyDataHelper(writer, values, (w, val) => { WriteVector3(w, val.Origin); WriteVector3(w, val.Direction); });
+        }
+
+        public static void WriteRectangleArray(EndianAwareBinaryWriter writer, Rectangle[] values)
+        {
+            WriteFloatArray(writer, values.Select(n => n.MinX).ToArray());
+            WriteFloatArray(writer, values.Select(n => n.MinY).ToArray());
+            WriteFloatArray(writer, values.Select(n => n.MaxX).ToArray());
+            WriteFloatArray(writer, values.Select(n => n.MaxY).ToArray());
         }
 
         public static void WriteReferentArray(EndianAwareBinaryWriter writer, int[] values)

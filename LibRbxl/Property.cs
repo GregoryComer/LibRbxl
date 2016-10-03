@@ -71,6 +71,7 @@ namespace LibRbxl
         NumberSequence = 0x15,
         ColorSequence = 0x16,
         NumberRange = 0x17,
+        Rectangle = 0x18,
         PhysicalProperties = 0x19
     }
 }

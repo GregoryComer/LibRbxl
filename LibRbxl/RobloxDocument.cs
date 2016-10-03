@@ -88,9 +88,9 @@ namespace LibRbxl
                 var typeHeader = typeHeaders.First(n => n.Name == typeGroup.Key);
                 var instanceTypes = serializer.GetUniqueProperties(typeGroup.Value);
                 var propertyBlocks = new List<PropertyBlock>();
-                foreach (var propType in instanceTypes)
+                foreach (var propertyDescriptor in instanceTypes)
                 {
-                    propertyBlocks.Add(serializer.FillPropertyBlock(propType.Key, propType.Value, typeHeader.TypeId, typeGroup.Value, ReferentProvider));
+                    propertyBlocks.Add(serializer.FillPropertyBlock(propertyDescriptor.Name, propertyDescriptor.Type, typeHeader.TypeId, typeGroup.Value, ReferentProvider));
                 }
                 foreach (var bytes in propertyBlocks.Select(propertyBlock => propertyBlock.Serialize()))
                 {
