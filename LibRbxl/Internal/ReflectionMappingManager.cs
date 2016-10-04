@@ -40,6 +40,11 @@ namespace LibRbxl.Internal
             }
         }
 
+        public static bool HasMappedClrProperty(Type type, string propertyName)
+        {
+            return PropertyCache.ContainsKey(type) && PropertyCache[type].ContainsKey(propertyName);
+        }
+
         public static Tuple<PropertyInfo, PropertyType> GetMappedClrProperty(Type type, string propertyName)
         {
             try

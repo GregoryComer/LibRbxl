@@ -8,7 +8,7 @@
         public bool AutoRotate { get; set; }
         public Vector3 CameraOffset { get; set; }
         public HumanoidDisplayDistanceType DisplayDistanceType { get; set; }
-        [RobloxProperty("Health_xml", PropertyType.Float)]
+        [RobloxProperty("Health_XML", PropertyType.Float)]
         public float Health { get; set;}
         public float HealthDisplayDistance { get; set; }
         public float HipHeight { get; set; }

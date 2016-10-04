@@ -45,11 +45,12 @@ namespace LibRbxl
 
         public void SetProperties(RobloxDocument document, Instance instance, PropertyCollection propertyCollection)
         {
+            var instanceType = instance.GetType();
             foreach (var property in propertyCollection)
             {
-                try
+                if (ReflectionMappingManager.HasMappedClrProperty(instanceType, property.Name))
                 {
-                    var mappedPropertyTuple = ReflectionMappingManager.GetMappedClrProperty(instance.GetType(), property.Name);
+                    var mappedPropertyTuple = ReflectionMappingManager.GetMappedClrProperty(instanceType, property.Name);
                     if (mappedPropertyTuple.Item2 != PropertyType.Referent)
                         mappedPropertyTuple.Item1.SetValue(instance, property.Get());
                     else
@@ -63,7 +64,7 @@ namespace LibRbxl
                         }
                     }
                 }
-                catch (ArgumentException) // No matching CLR type
+                else
                 {
                     instance.UnmanagedProperties.Add(property.Name, property);
                 }
