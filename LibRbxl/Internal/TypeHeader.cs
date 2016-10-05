@@ -58,7 +58,7 @@ namespace LibRbxl.Internal
             Util.WriteLengthPrefixedString(writer, Name);
             writer.WriteByte((byte) (AdditionalData != null ? 1 : 0));
             writer.WriteInt32(InstanceCount);
-            writer.WriteBytes(Util.TransformInt32Array(Referents));
+            Util.WriteReferentArray(writer, Referents);
             if (AdditionalData != null)
                 writer.WriteBytes(AdditionalData);
         }

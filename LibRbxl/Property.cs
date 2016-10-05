@@ -48,6 +48,11 @@ namespace LibRbxl
         {
             Set<T>((T)value);
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public enum PropertyType

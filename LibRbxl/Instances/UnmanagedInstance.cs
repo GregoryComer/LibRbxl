@@ -4,6 +4,8 @@
     {
         public override string ClassName { get; }
 
+        public bool IsService { get; set; }
+
         public UnmanagedInstance(string className)
         {
             ClassName = className;

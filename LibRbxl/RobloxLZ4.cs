@@ -29,12 +29,12 @@ namespace LibRbxl
         public static void WriteBlock(Stream stream, byte[] bytes)
         {
             var writer = new EndianAwareBinaryWriter(stream);
+            var compressedBytes = LZ4Codec.Encode(bytes, 0, bytes.Length);
 
-            writer.WriteInt32((int) (bytes.Length + 1 + Math.Ceiling((bytes.Length - 0xF) / 255.0)));
+            writer.WriteInt32(compressedBytes.Length);
             writer.WriteInt32(bytes.Length);
             writer.WriteInt32(0); // Reserved
             
-            var compressedBytes = LZ4Codec.Encode(bytes, 0, bytes.Length);
             writer.WriteBytes(compressedBytes);
         }
     }

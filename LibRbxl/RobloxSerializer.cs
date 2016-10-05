@@ -135,19 +135,39 @@ namespace LibRbxl
 
         private T GetPropertyValue<T>(string propertyName, Instance instance, Type instanceType, PropertyType propertyType, ReferentProvider referentProvider)
         {
-            var propertyTuple = ReflectionMappingManager.PropertyCache[instanceType][propertyName];
-            
-            if (propertyType != PropertyType.Referent)
+            if (ReflectionMappingManager.HasMappedClrProperty(instanceType, propertyName))
             {
-                var propertyValue = propertyTuple.Item1.GetValue(instance);
-                if (propertyValue != null)
-                    return (T) propertyValue;
+                var propertyTuple = ReflectionMappingManager.PropertyCache[instanceType][propertyName];
+
+                if (propertyType != PropertyType.Referent)
+                {
+                    var propertyValue = propertyTuple.Item1.GetValue(instance);
+                    if (propertyValue != null)
+                        return (T) propertyValue;
+                    else
+                        return (T) ReflectionMappingManager.GetDefaultValue(instanceType, propertyName, propertyType);
+                }
                 else
-                    return (T) ReflectionMappingManager.GetDefaultValue(instanceType, propertyName, propertyType);
+                {
+                    var referentObj = propertyTuple.Item1.GetValue(instance);
+                    if (referentObj != null)
+                        return
+                            (T) (object) referentProvider.GetReferent((Instance) propertyTuple.Item1.GetValue(instance));
+                    else
+                        return (T) ReflectionMappingManager.GetDefaultValueForType(PropertyType.Referent);
+                }
+            }
+            else if (instance.UnmanagedProperties.ContainsKey(propertyName))
+            {
+                var objValue =  instance.UnmanagedProperties[propertyName].Get();
+                if (objValue != null)
+                    return (T) objValue;
+                else
+                    return (T) ReflectionMappingManager.GetDefaultValueForType(propertyType);
             }
             else
             {
-                return (T)(object)referentProvider.GetReferent((Instance)propertyTuple.Item1.GetValue(instance));
+                return (T)ReflectionMappingManager.GetDefaultValueForType(propertyType);
             }
         }
 

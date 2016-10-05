@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using LibRbxl.Instances;
 
@@ -13,6 +14,8 @@ namespace LibRbxl
 
         public void Add(Instance instance, int referent)
         {
+            Trace.WriteLine($"{referent}\t{instance.ClassName}");
+
             if (_cache.ContainsKey(instance) && _cache[instance] != referent)
                 throw new ArgumentException("The specified roblox object already has a cached referent value.", nameof(instance));
             if (_inverseCache.ContainsKey(referent) && _inverseCache[referent] != instance)
@@ -27,6 +30,8 @@ namespace LibRbxl
         public void ClearCache()
         {
             _cache.Clear();
+            _inverseCache.Clear();
+            _nextReferent = 0;
         }
         
         public int GetReferent(Instance instance)
@@ -39,7 +44,7 @@ namespace LibRbxl
             else
             {
                 var referent = AllocateReferent();
-                _cache.Add(instance, referent);
+                Add(instance, referent);
                 return referent;
             }
         }

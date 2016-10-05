@@ -21,6 +21,11 @@ namespace LibRbxl.Internal
             TypeId = typeId;
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public static PropertyBlock Deserialize(byte[] data, TypeHeader[] typeHeaders)
         {
             var stream = new MemoryStream(data);
@@ -33,7 +38,7 @@ namespace LibRbxl.Internal
             var typeId = reader.ReadInt32();
             var name = Util.ReadLengthPrefixedString(reader);
             var dataType = (PropertyType) reader.ReadByte();
-            
+
             var typeHeader = typeHeaders.FirstOrDefault(n => n.TypeId == typeId);
             if (typeHeader == null)
                 throw new ArgumentException("No type header matches type id specified in property block.");
@@ -137,9 +142,9 @@ namespace LibRbxl.Internal
                 }
                 case PropertyType.Rectangle:
                 {
-                        var values = Util.ReadRectangleArray(reader, typeHeader.InstanceCount);
-                        return new PropertyBlock<Rectangle>(name, dataType, typeId, values);
-                    }
+                    var values = Util.ReadRectangleArray(reader, typeHeader.InstanceCount);
+                    return new PropertyBlock<Rectangle>(name, dataType, typeId, values);
+                }
                 case PropertyType.PhysicalProperties:
                 {
                     var values = Util.ReadPhysicalPropertiesArray(reader, typeHeader.InstanceCount);

@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class UserInputService : Instance
+    public class UserInputService : Instance, IService
     {
         public override string ClassName => "UserInputService";
 

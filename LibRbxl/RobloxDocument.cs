@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace LibRbxl
 
         public void Save(string filename)
         {
-            using (var filestream = File.OpenWrite(filename))
+            using (var filestream = File.Open(filename, FileMode.Create))
             {
                 Save(filestream);
             }
@@ -58,7 +59,7 @@ namespace LibRbxl
 
             ReferentProvider.ClearCache(); // Clearing existing referent cache guarantees that referents won't be fragmented
             var instances = Instances.ToArray();
-            var typeGroups = instances.GroupBy(n => n.ClassName).ToDictionary(n => n.Key, n => n.ToArray());
+            var typeGroups = instances.GroupBy(n => n.ClassName).OrderBy(n => n.Key).ToDictionary(n => n.Key, n => n.ToArray());
 
             var typeCount = typeGroups.Count;
             var objectCount = typeGroups.Aggregate(0, (acc, pair) => acc + pair.Value.Length);
@@ -75,6 +76,12 @@ namespace LibRbxl
             foreach (var typeGroup in typeGroups)
             {
                 var typeHeader = new TypeHeader(typeGroup.Key, nextTypeId, typeGroup.Value.Select(n => ReferentProvider.GetReferent(n)).ToArray()); // TODO Additional service data
+                if (IsService(typeGroup))
+                {
+                    typeHeader.AdditionalData = new byte[typeHeader.InstanceCount];
+                    for (var i = 0; i < typeHeader.InstanceCount; i++)
+                        typeHeader.AdditionalData[i] = 0x1;
+                }
                 typeHeaders[nextTypeId] = typeHeader;
                 var bytes = typeHeader.Serialize();
                 writer.WriteBytes(Signatures.TypeHeaderSignature);
@@ -92,8 +99,9 @@ namespace LibRbxl
                 {
                     propertyBlocks.Add(serializer.FillPropertyBlock(propertyDescriptor.Name, propertyDescriptor.Type, typeHeader.TypeId, typeGroup.Value, ReferentProvider));
                 }
-                foreach (var bytes in propertyBlocks.Select(propertyBlock => propertyBlock.Serialize()))
+                foreach (var propertyBlock in propertyBlocks)
                 {
+                    var bytes = propertyBlock.Serialize();
                     writer.WriteBytes(Signatures.PropBlockSignature);
                     RobloxLZ4.WriteBlock(stream, bytes);
                 }
@@ -109,7 +117,17 @@ namespace LibRbxl
             writer.WriteBytes(Signatures.EndSignature);
             writer.WriteBytes(Signatures.FileEndSignature);
         }
-        
+
+        private bool IsService(KeyValuePair<string, Instance[]> typeGroup)
+        {
+            if (typeGroup.Value[0] is IService)
+                return true;
+            var unmanagedType = typeGroup.Value[0] as UnmanagedInstance;
+            if (unmanagedType == null)
+                return false;
+            return unmanagedType.IsService;
+        }
+
         public static RobloxDocument FromStream(Stream stream)
         {
             try

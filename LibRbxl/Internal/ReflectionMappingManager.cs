@@ -100,7 +100,7 @@ namespace LibRbxl.Internal
             return GetDefaultValueForType(propertyType);
         }
 
-        private static object GetDefaultValueForType(PropertyType type)
+        public static object GetDefaultValueForType(PropertyType type)
         {
             switch (type)
             {

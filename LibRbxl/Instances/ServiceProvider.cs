@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public abstract class ServiceProvider : Instance
+    public abstract class ServiceProvider : Instance, IService
     {
 
     }

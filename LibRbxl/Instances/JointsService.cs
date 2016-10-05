@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    class JointsService : Instance
+    class JointsService : Instance, IService
     {
         public override string ClassName => "JointsService";
 
