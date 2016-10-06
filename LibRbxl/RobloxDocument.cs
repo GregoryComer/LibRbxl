@@ -79,7 +79,7 @@ namespace LibRbxl
 
             ReferentProvider.ClearCache(); // Clearing existing referent cache guarantees that referents won't be fragmented
             var instances = GetChildFirstInstanceEnumerator().ToArray();
-            var typeGroups = instances.GroupBy(n => n.ClassName).OrderBy(n => GetOrderingKey(n)).ToDictionary(n => n.Key, n => n.ToArray()); // DEBUG COLLECTION REORDERING
+            var typeGroups = instances.GroupBy(n => n.ClassName).OrderBy(n => n.Key).ToDictionary(n => n.Key, n => n.ToArray());
 
             var typeCount = typeGroups.Count;
             var objectCount = typeGroups.Aggregate(0, (acc, pair) => acc + pair.Value.Length);
@@ -129,6 +129,7 @@ namespace LibRbxl
 
             // Build parent child referent arrays
             var parentData = Util.BuildParentData(instances, ReferentProvider);
+            
             var parentDataBytes = Util.SerializeParentData(parentData);
             writer.WriteBytes(Signatures.ParentDataSignature);
             RobloxLZ4.WriteBlock(stream, parentDataBytes);
@@ -137,7 +138,10 @@ namespace LibRbxl
             writer.WriteBytes(Signatures.EndSignature);
             writer.WriteBytes(Signatures.FileEndSignature);
         }
-
+        
+        /// <summary>
+        /// This is a debugging aid, which when used as a sorting key, orders instances in the same way Roblox seems to. This is useful when binary comparing files.
+        /// </summary>
         private static string GetOrderingKey(IGrouping<string, Instance> n)
         {
             if (n.Key == "CSGDictionaryService")

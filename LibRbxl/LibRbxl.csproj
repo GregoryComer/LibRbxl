@@ -110,6 +110,7 @@
     <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\InstanceFactory.cs" />
     <Compile Include="Instances\ISingleton.cs" />
+    <Compile Include="Instances\LevelOfDetailSetting.cs" />
     <Compile Include="Instances\PhysicalProperties.cs" />
     <Compile Include="Instances\Rectangle.cs" />
     <Compile Include="Internal\NumberRangeProperty.cs" />

@@ -12,7 +12,7 @@ namespace LibRbxl.Test
     [TestFixture]
     public class SerializeDeserializeTests
     {
-        [Test, Explicit] // I've temporarily marked this test as explicit, as it passes on my development machine, but fails on the CI server. I need to look further into this.
+        [Test]
         public void WorkspaceOnly()
         {
             var doc = new RobloxDocument();

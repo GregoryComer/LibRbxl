@@ -29,7 +29,6 @@ namespace LibRbxl
 
         public void ClearCache()
         {
-            return; // DEBUG
             _cache.Clear();
             _inverseCache.Clear();
             _nextReferent = 0;

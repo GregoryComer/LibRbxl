@@ -152,9 +152,7 @@ namespace LibRbxl.Internal
                 }
                 default:
                 {
-                    // DEBUG
                     return null;
-                    //throw new InvalidRobloxFileException("Unknown property data type");
                 }
             }
         }

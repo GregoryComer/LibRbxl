@@ -3,7 +3,7 @@
     public class ScrollingFrame : GuiObject
     {
         public override string ClassName => "ScrollingFrame";
-
+        [RobloxIgnore]
         public Vector2 AbsoluteWindowSize { get; set; }
         public string BottomImage { get; set; }
         public Vector2 CanvasPosition { get; set; }
