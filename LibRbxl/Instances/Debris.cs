@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class Debris : Instance
+    public class Debris : Instance, ISingleton
     {
         public override string ClassName => "Debris";
 

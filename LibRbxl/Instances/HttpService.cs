@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class HttpService : Instance, IService
+    public class HttpService : Instance, ISingleton
     {
         public override string ClassName => "HttpService";
 

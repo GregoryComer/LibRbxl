@@ -11,6 +11,7 @@
         public CFrame Focus { get; set; }
         public bool HeadLocked { get; set; }
         public float HeadScale { get; set; }
+        [RobloxIgnore]
         public Vector2 ViewportSize { get; set; }
     }
 }

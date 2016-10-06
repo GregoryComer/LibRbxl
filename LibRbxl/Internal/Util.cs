@@ -802,14 +802,19 @@ namespace LibRbxl.Internal
             WriteFloatArray(writer, zValues);
         }
 
-        public static Tuple<int, int>[] BuildParentData(Instance[] objects, ReferentProvider referentProvider)
+        public static Tuple<int, int>[] BuildParentData(Instance[] objects, ReferentProvider referentProvider, bool isOrdered = true) // Roblox parent data requires that all child objects appear before their parent. If isOrdered is true, this method assumes that objects is sorted this way. If false, the method will sort the output appropriately.
         {
             var pairs = new Tuple<int, int>[objects.Length];
             for (var i = 0; i < objects.Length; i++)
             {
                 pairs[i] = new Tuple<int, int>(referentProvider.GetReferent(objects[i]), objects[i].Parent != null ? referentProvider.GetReferent(objects[i].Parent) : -1);
             }
-            return pairs;
+            return isOrdered ? pairs : OrderParentData(pairs);
+        }
+
+        private static Tuple<int, int>[] OrderParentData(Tuple<int, int>[] pairs)
+        {
+           throw new NotImplementedException();
         }
 
         public static byte[] SerializeParentData(Tuple<int, int>[] parentData)

@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class Lighting : Instance
+    public class Lighting : Instance, ISingleton
     {
         public override string ClassName => "Lighting";
 

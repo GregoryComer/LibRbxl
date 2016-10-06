@@ -192,7 +192,7 @@ namespace LibRbxl
                     }
                 }
             }
-            return properties;
+            return properties.OrderBy(n => n.Name, StringComparer.Ordinal);
         }
 
         public class PropertyNameTypePair : IEquatable<PropertyNameTypePair>

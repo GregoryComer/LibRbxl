@@ -4,7 +4,8 @@
     {
         public override string ClassName { get; }
 
-        public bool IsService { get; set; }
+        [RobloxIgnore]
+        public bool IsSingleton { get; set; }
 
         public UnmanagedInstance(string className)
         {

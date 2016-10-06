@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class SoundService : Instance, IService
+    public class SoundService : Instance, ISingleton
     {
         public override string ClassName => "SoundService";
 

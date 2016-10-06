@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LibRbxl.Instances
 {
-    public interface IService : IInstance
+    public interface ISingleton : IInstance
     {
 
     }

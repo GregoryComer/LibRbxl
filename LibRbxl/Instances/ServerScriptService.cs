@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class ServerScriptService : Instance, IService
+    public class ServerScriptService : Instance, ISingleton
     {
         public override string ClassName => "ServerScriptService";
 

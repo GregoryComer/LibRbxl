@@ -16,6 +16,7 @@
         public DevCameraOcclusionMode DevCameraOcclusionMode { get; set; }
         public DevComputerCameraMovementMode DevComputerCameraMode { get; set; }
         public DevComputerMovementMode DevComputerMovementMode { get; set; }
+        [RobloxIgnore]
         public bool DevEnableMouseLock { get; set; }
         public DevTouchCameraMovementMode DevTouchCameraMode { get; set; }
         public DevTouchMovementMode DevTouchMovementMode { get; set; }

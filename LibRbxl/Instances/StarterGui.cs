@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class StarterGui : BasePlayerGui
+    public class StarterGui : BasePlayerGui, ISingleton
     {
         public override string ClassName => "StarterGui";
 

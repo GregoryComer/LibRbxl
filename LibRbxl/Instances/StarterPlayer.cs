@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class StarterPlayer : Instance
+    public class StarterPlayer : Instance, ISingleton
     {
         public override string ClassName => "StarterPlayer";
 
@@ -11,6 +11,7 @@
         public DevCameraOcclusionMode DevCameraOcclusionMode { get; set; }
         public DevComputerCameraMovementMode DevComputerCameraMovementMode { get; set; }
         public DevComputerMovementMode DevComputerMovementMode { get; set; }
+        [RobloxIgnore]
         public bool DevEnableMouseLock { get; set; }
         public DevTouchCameraMovementMode DevTouchCameraMovementMode { get; set; }
         public DevTouchMovementMode DevTouchMovementMode { get; set; }

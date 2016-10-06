@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class LogService : Instance, IService
+    public class LogService : Instance, ISingleton
     {
         public override string ClassName => "LogService";
     }

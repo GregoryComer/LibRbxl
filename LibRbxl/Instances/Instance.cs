@@ -6,6 +6,8 @@ namespace LibRbxl.Instances
     public abstract class Instance : IInstance
     {
         private Instance _parent;
+
+        [RobloxIgnore]
         public bool Archivable { get; set; }
 
         [RobloxIgnore]

@@ -29,7 +29,7 @@ namespace LibRbxl
             return Children.FirstOrDefault(n => n.Name == name);
         }
 
-        private IEnumerable<Instance> GetInstanceEnumerator()
+        public IEnumerable<Instance> GetInstanceEnumerator()
         {
             var queue = new Queue<Instance>(Children);
             while (queue.Count > 0)
@@ -39,6 +39,26 @@ namespace LibRbxl
                 if (child.Children.Count <= 0) continue;
                 foreach (var innerChild in child.Children)
                     queue.Enqueue(innerChild);
+            }
+        }
+
+        public IEnumerable<Instance> GetChildFirstInstanceEnumerator()
+        {
+            foreach (var child in Children)
+            {
+                foreach (var innerChild in GetChildFirstInstanceEnumeratorInternal(child))
+                    yield return innerChild;
+                yield return child;
+            }
+        }
+
+        private static IEnumerable<Instance> GetChildFirstInstanceEnumeratorInternal(Instance inst)
+        {
+            foreach (var child in inst.Children)
+            {
+                foreach (var innerChild in GetChildFirstInstanceEnumeratorInternal(child))
+                    yield return innerChild;
+                yield return child;
             }
         }
 
@@ -58,8 +78,8 @@ namespace LibRbxl
             var serializer = new RobloxSerializer(this);
 
             ReferentProvider.ClearCache(); // Clearing existing referent cache guarantees that referents won't be fragmented
-            var instances = Instances.ToArray();
-            var typeGroups = instances.GroupBy(n => n.ClassName).OrderBy(n => n.Key).ToDictionary(n => n.Key, n => n.ToArray());
+            var instances = GetChildFirstInstanceEnumerator().ToArray();
+            var typeGroups = instances.GroupBy(n => n.ClassName).OrderBy(n => GetOrderingKey(n)).ToDictionary(n => n.Key, n => n.ToArray()); // DEBUG COLLECTION REORDERING
 
             var typeCount = typeGroups.Count;
             var objectCount = typeGroups.Aggregate(0, (acc, pair) => acc + pair.Value.Length);
@@ -75,8 +95,8 @@ namespace LibRbxl
             var nextTypeId = 0;
             foreach (var typeGroup in typeGroups)
             {
-                var typeHeader = new TypeHeader(typeGroup.Key, nextTypeId, typeGroup.Value.Select(n => ReferentProvider.GetReferent(n)).ToArray()); // TODO Additional service data
-                if (IsService(typeGroup))
+                var typeHeader = new TypeHeader(typeGroup.Key, nextTypeId, typeGroup.Value.Select(n => ReferentProvider.GetReferent(n)).ToArray());
+                if (IsSingleton(typeGroup))
                 {
                     typeHeader.AdditionalData = new byte[typeHeader.InstanceCount];
                     for (var i = 0; i < typeHeader.InstanceCount; i++)
@@ -118,14 +138,24 @@ namespace LibRbxl
             writer.WriteBytes(Signatures.FileEndSignature);
         }
 
-        private bool IsService(KeyValuePair<string, Instance[]> typeGroup)
+        private static string GetOrderingKey(IGrouping<string, Instance> n)
         {
-            if (typeGroup.Value[0] is IService)
+            if (n.Key == "CSGDictionaryService")
+                return "Caa";
+            else if (n.Key == "GamepadService")
+                return "Gb";
+            else
+                return n.Key;
+        }
+
+        private bool IsSingleton(KeyValuePair<string, Instance[]> typeGroup)
+        {
+            if (typeGroup.Value[0] is ISingleton)
                 return true;
             var unmanagedType = typeGroup.Value[0] as UnmanagedInstance;
             if (unmanagedType == null)
                 return false;
-            return unmanagedType.IsService;
+            return unmanagedType.IsSingleton;
         }
 
         public static RobloxDocument FromStream(Stream stream)
@@ -200,7 +230,7 @@ namespace LibRbxl
                 {
                     for (var i = 0; i < type.InstanceCount; i++)
                     {
-                        var instance = InstanceFactory.Create(type.Name);
+                        var instance = InstanceFactory.Create(type.Name, type.AdditionalData != null);
                         var referent = type.Referents[i];
                         document.ReferentProvider.Add(instance, referent);
                         instances.Add(instance);

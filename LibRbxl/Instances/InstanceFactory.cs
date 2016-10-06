@@ -9,11 +9,11 @@ namespace LibRbxl.Instances
 {
     internal static class InstanceFactory
     {
-        public static Instance Create(string type)
+        public static Instance Create(string type, bool service)
         {
             if (!ReflectionMappingManager.TypeCache.ContainsKey(type) || type == "Instance")
             {
-                var unmanagedInstance = new UnmanagedInstance(type);
+                var unmanagedInstance = new UnmanagedInstance(type) {IsSingleton = service};
                 return unmanagedInstance;
             }
 

@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class MarketplaceService : Instance, IService
+    public class MarketplaceService : Instance, ISingleton
     {
         public override string ClassName => "MarketplaceService";
     }

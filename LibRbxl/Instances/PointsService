@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class PointsService : Instance, IService
+    public class PointsSingleton : Instance, ISingleton
     {
         public override string ClassName => "PointsService";
     }

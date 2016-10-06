@@ -5,6 +5,7 @@
         public override string ClassName => "Terrain";
 
         // TODO: Serialize terrain data
+        [RobloxIgnore]
         public bool IsSmooth { get; set; }
         [RobloxIgnore] // TODO Is this serialized?
         public Region3int16 MaxExtents { get; set; }

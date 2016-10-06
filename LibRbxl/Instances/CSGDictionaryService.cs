@@ -1,6 +1,6 @@
 ﻿namespace LibRbxl.Instances
 {
-    public class CSGDictionaryService : Instance, IService
+    public class CsgDictionaryService : Instance, ISingleton
     {
         public override string ClassName => "CSGDictionaryService";
     }

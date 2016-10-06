@@ -177,7 +177,13 @@ namespace LibRbxl.Internal
                 return PropertyType.Int32;
             else if (propertyType == typeof(string))
                 return PropertyType.String;
-            else if (propertyType.IsEnum || propertyType == typeof(int))
+            else if (propertyType == typeof(BrickColor))
+                return PropertyType.BrickColor;
+            else if (propertyType == typeof(Faces))
+                return PropertyType.Faces;
+            else if (propertyType == typeof(Axis))
+                return PropertyType.Axis;
+            else if (propertyType.IsEnum)
                 return PropertyType.Enumeration;
             else if (propertyType == typeof(float))
                 return PropertyType.Float;
@@ -193,14 +199,8 @@ namespace LibRbxl.Internal
                 return PropertyType.UDim2;
             else if (propertyType == typeof(CFrame))
                 return PropertyType.CFrame;
-            else if (propertyType == typeof(BrickColor))
-                return PropertyType.BrickColor;
             else if (propertyType == typeof(double))
                 return PropertyType.Double;
-            else if (propertyType == typeof(Faces))
-                return PropertyType.Faces;
-            else if (propertyType == typeof(Axis))
-                return PropertyType.Axis;
             else if (propertyType == typeof(Vector2))
                 return PropertyType.Vector2;
             else if (propertyType == typeof (Ray))

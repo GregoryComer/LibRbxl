@@ -102,14 +102,14 @@
     <Compile Include="Instances\CharacterMesh.cs" />
     <Compile Include="ChildCollection.cs" />
     <Compile Include="Instances\ConcurrencyModel.cs" />
-    <Compile Include="Instances\CSGDictionaryService.cs" />
+    <Compile Include="Instances\CsgDictionaryService.cs" />
     <Compile Include="Instances\Font.cs" />
     <Compile Include="Instances\FontSize.cs" />
     <Compile Include="Instances\FormFactor.cs" />
     <Compile Include="Instances\Hole.cs" />
     <Compile Include="Instances\IInstance.cs" />
     <Compile Include="Instances\InstanceFactory.cs" />
-    <Compile Include="Instances\IService.cs" />
+    <Compile Include="Instances\ISingleton.cs" />
     <Compile Include="Instances\PhysicalProperties.cs" />
     <Compile Include="Instances\Rectangle.cs" />
     <Compile Include="Internal\NumberRangeProperty.cs" />
@@ -250,7 +250,7 @@
     <Compile Include="Instances\PluginManager.cs" />
     <Compile Include="Instances\PluginMouse.cs" />
     <Compile Include="Instances\PointLight.cs" />
-    <Compile Include="Instances\PointsService.cs" />
+    <None Include="Instances\PointsService" />
     <Compile Include="Instances\Pose.cs" />
     <Compile Include="Instances\PoseEasingDirection.cs" />
     <Compile Include="Instances\PoseEasingStyle.cs" />
