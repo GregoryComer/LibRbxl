@@ -160,6 +160,12 @@ namespace LibRbxl
 
         public static RobloxDocument FromStream(Stream stream)
         {
+            RawRobloxDocument rawDocument;
+            return FromStream(stream, out rawDocument);
+        }
+
+        public static RobloxDocument FromStream(Stream stream, out RawRobloxDocument rawDocument)
+        {
             try
             {
                 var reader = new EndianAwareBinaryReader(stream);
@@ -170,6 +176,7 @@ namespace LibRbxl
                 Dictionary<int, List<PropertyBlock>> propertyData;
                 Tuple<int, int>[] childParentPairs;
                 ReadRaw(reader, out typeCount, out objectCount, out typeHeaders, out propertyData, out childParentPairs);
+                rawDocument = new RawRobloxDocument(objectCount, typeCount, typeHeaders, propertyData, childParentPairs);
 
                 // Ignore the ...</roblox>
 
@@ -232,8 +239,14 @@ namespace LibRbxl
 
         public static RobloxDocument FromFile(string filename)
         {
+            RawRobloxDocument rawDocument;
+            return FromFile(filename, out rawDocument);
+        }
+
+        public static RobloxDocument FromFile(string filename, out RawRobloxDocument rawDocument)
+        {
             var fileStream = new FileStream(filename, FileMode.Open);
-            var document = FromStream(fileStream);
+            var document = FromStream(fileStream, out rawDocument);
             fileStream.Close();
             return document;
         }
