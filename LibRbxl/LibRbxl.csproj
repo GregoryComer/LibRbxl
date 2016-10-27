@@ -128,6 +128,7 @@
     <Compile Include="NumberSequenceProperty.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="PropertyBlockFactory.cs" />
+    <Compile Include="RawRobloxDocument.cs" />
     <Compile Include="RectangleProperty.cs" />
     <Compile Include="RobloxLZ4.cs" />
     <Compile Include="Instances\MeshType.cs" />
