@@ -8,7 +8,7 @@ using LibRbxl.Instances;
 
 namespace LibRbxl.Internal
 {
-    internal abstract class PropertyBlock
+    public abstract class PropertyBlock
     {
         public string Name { get; set; }
         public PropertyType PropertyType { get; set; }

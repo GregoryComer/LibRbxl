@@ -114,11 +114,7 @@ namespace LibRbxl
             {
                 var typeHeader = typeHeaders.First(n => n.Name == typeGroup.Key);
                 var instanceTypes = serializer.GetUniqueProperties(typeGroup.Value);
-                var propertyBlocks = new List<PropertyBlock>();
-                foreach (var propertyDescriptor in instanceTypes)
-                {
-                    propertyBlocks.Add(serializer.FillPropertyBlock(propertyDescriptor.Name, propertyDescriptor.Type, typeHeader.TypeId, typeGroup.Value, ReferentProvider));
-                }
+                var propertyBlocks = instanceTypes.Select(propertyDescriptor => serializer.FillPropertyBlock(propertyDescriptor.Name, propertyDescriptor.Type, typeHeader.TypeId, typeGroup.Value, ReferentProvider)).ToList();
                 foreach (var propertyBlock in propertyBlocks)
                 {
                     var bytes = propertyBlock.Serialize();
@@ -168,58 +164,12 @@ namespace LibRbxl
             {
                 var reader = new EndianAwareBinaryReader(stream);
 
-                // Check file signature
-                var signatureBytes = reader.ReadBytes(Signatures.Signature.Length);
-                if (!signatureBytes.SequenceEqual(Signatures.Signature))
-                    throw new InvalidRobloxFileException("The file signature does not match.");
-
-                var typeCount = reader.ReadInt32();
-                var objectCount = reader.ReadInt32();
-                reader.ReadInt32(); // Reserved
-                reader.ReadInt32(); // Reserved
-
-                // Deserialize type headers
-                var typeHeaders = new TypeHeader[typeCount];
-                for (var i = 0; i < typeCount; i++)
-                {
-                    var typeHeaderSignature = reader.ReadBytes(Signatures.TypeHeaderSignature.Length);
-                    if (!typeHeaderSignature.SequenceEqual(Signatures.TypeHeaderSignature))
-                        throw new InvalidRobloxFileException("Invalid type header signature.");
-
-                    var decompressedBytes = RobloxLZ4.ReadBlock(stream);
-                    var typeHeader = TypeHeader.Deserialize(decompressedBytes);
-                    typeHeaders[i] = typeHeader;
-                }
-
-                // Read property data
-                var propertyData = new Dictionary<int, List<PropertyBlock>>(); // Key is type id
-                byte[] lastPropSignature;
-
-                while (true)
-                {
-                    lastPropSignature = reader.ReadBytes(Signatures.PropBlockSignature.Length);
-                    if (!lastPropSignature.SequenceEqual(Signatures.PropBlockSignature))
-                        break;
-
-                    var decompressedBytes = RobloxLZ4.ReadBlock(stream);
-                    var propertyBlock = PropertyBlock.Deserialize(decompressedBytes, typeHeaders);
-
-                    if (propertyBlock == null)
-                        continue;
-
-                    if (!propertyData.ContainsKey(propertyBlock.TypeId))
-                        propertyData.Add(propertyBlock.TypeId, new List<PropertyBlock>());
-                    propertyData[propertyBlock.TypeId].Add(propertyBlock);
-                }
-
-                if (!lastPropSignature.SequenceEqual(Signatures.ParentDataSignature))
-                    throw new InvalidRobloxFileException("Missing parent data section.");
-                var parentData = RobloxLZ4.ReadBlock(stream);
-                var childParentPairs = Util.ReadParentData(parentData);
-
-                var endSignature = reader.ReadBytes(Signatures.EndSignature.Length);
-                if (!endSignature.SequenceEqual(Signatures.EndSignature))
-                    throw new InvalidRobloxFileException("End signature is missing or invalid.");
+                int typeCount;
+                int objectCount;
+                TypeHeader[] typeHeaders;
+                Dictionary<int, List<PropertyBlock>> propertyData;
+                Tuple<int, int>[] childParentPairs;
+                ReadRaw(reader, out typeCount, out objectCount, out typeHeaders, out propertyData, out childParentPairs);
 
                 // Ignore the ...</roblox>
 
@@ -286,6 +236,62 @@ namespace LibRbxl
             var document = FromStream(fileStream);
             fileStream.Close();
             return document;
+        }
+
+        public static void ReadRaw(EndianAwareBinaryReader reader, out int typeCount, out int objectCount, out TypeHeader[] typeHeaders, out Dictionary<int, List<PropertyBlock>> propertyData, out Tuple<int, int>[] childParentPairs)
+        {
+            // Check file signature
+            var signatureBytes = reader.ReadBytes(Signatures.Signature.Length);
+            if (!signatureBytes.SequenceEqual(Signatures.Signature))
+                throw new InvalidRobloxFileException("The file signature does not match.");
+
+            typeCount = reader.ReadInt32();
+            objectCount = reader.ReadInt32();
+            reader.ReadInt32(); // Reserved
+            reader.ReadInt32(); // Reserved
+
+            // Deserialize type headers
+            typeHeaders = new TypeHeader[typeCount];
+            for (var i = 0; i < typeCount; i++)
+            {
+                var typeHeaderSignature = reader.ReadBytes(Signatures.TypeHeaderSignature.Length);
+                if (!typeHeaderSignature.SequenceEqual(Signatures.TypeHeaderSignature))
+                    throw new InvalidRobloxFileException("Invalid type header signature.");
+
+                var decompressedBytes = RobloxLZ4.ReadBlock(reader.Stream);
+                var typeHeader = TypeHeader.Deserialize(decompressedBytes);
+                typeHeaders[i] = typeHeader;
+            }
+
+            // Read property data
+            propertyData = new Dictionary<int, List<PropertyBlock>>(); // Key is type id
+            byte[] lastPropSignature;
+
+            while (true)
+            {
+                lastPropSignature = reader.ReadBytes(Signatures.PropBlockSignature.Length);
+                if (!lastPropSignature.SequenceEqual(Signatures.PropBlockSignature))
+                    break;
+
+                var decompressedBytes = RobloxLZ4.ReadBlock(reader.Stream);
+                var propertyBlock = PropertyBlock.Deserialize(decompressedBytes, typeHeaders);
+
+                if (propertyBlock == null)
+                    continue;
+
+                if (!propertyData.ContainsKey(propertyBlock.TypeId))
+                    propertyData.Add(propertyBlock.TypeId, new List<PropertyBlock>());
+                propertyData[propertyBlock.TypeId].Add(propertyBlock);
+            }
+
+            if (!lastPropSignature.SequenceEqual(Signatures.ParentDataSignature))
+                throw new InvalidRobloxFileException("Missing parent data section.");
+            var parentData = RobloxLZ4.ReadBlock(reader.Stream);
+            childParentPairs = Util.ReadParentData(parentData);
+
+            var endSignature = reader.ReadBytes(Signatures.EndSignature.Length);
+            if (!endSignature.SequenceEqual(Signatures.EndSignature))
+                throw new InvalidRobloxFileException("End signature is missing or invalid.");
         }
         #endregion
     }

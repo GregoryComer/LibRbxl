@@ -12,6 +12,7 @@ namespace LibRbxl
         private Stream _stream;
 
         public Endianness Endianness { get; set; }
+        public Stream Stream => _stream;
 
         public EndianAwareBinaryReader(Stream stream, Endianness endianness = Endianness.Little)
         {

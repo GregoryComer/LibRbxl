@@ -8,7 +8,7 @@ using LibRbxl.Instances;
 
 namespace LibRbxl.Internal
 {
-    internal class TypeHeader
+    public class TypeHeader
     {
         public int TypeId { get; set; }
         public string Name { get; set; }
