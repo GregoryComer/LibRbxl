@@ -192,8 +192,7 @@ namespace LibRbxl
             return document;
         }
 
-        internal static void FillRobloxDocument(RobloxDocument document, int objectCount, TypeHeader[] typeHeaders,
-            Dictionary<int, List<PropertyBlock>> propertyData, Tuple<int, int>[] childParentPairs)
+        internal static void FillRobloxDocument(RobloxDocument document, int objectCount, TypeHeader[] typeHeaders, Dictionary<int, List<PropertyBlock>> propertyData, Tuple<int, int>[] childParentPairs, Dictionary<Instance, PropertyCollection> propertyDict = null)
         {
             var serializer = new RobloxSerializer(document);
             var instances = new List<Instance>(objectCount);
@@ -222,6 +221,7 @@ namespace LibRbxl
             {
                 var instance = instances[i];
                 serializer.SetProperties(document, instance, propertyCollections[i]);
+                propertyDict?.Add(instance, propertyCollections[i]);
             }
 
             // Set parents
