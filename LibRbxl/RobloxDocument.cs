@@ -160,12 +160,6 @@ namespace LibRbxl
 
         public static RobloxDocument FromStream(Stream stream)
         {
-            RawRobloxDocument rawDocument;
-            return FromStream(stream, out rawDocument);
-        }
-
-        public static RobloxDocument FromStream(Stream stream, out RawRobloxDocument rawDocument)
-        {
             try
             {
                 var reader = new EndianAwareBinaryReader(stream);
@@ -176,82 +170,77 @@ namespace LibRbxl
                 Dictionary<int, List<PropertyBlock>> propertyData;
                 Tuple<int, int>[] childParentPairs;
                 ReadRaw(reader, out typeCount, out objectCount, out typeHeaders, out propertyData, out childParentPairs);
-                rawDocument = new RawRobloxDocument(objectCount, typeCount, typeHeaders, propertyData, childParentPairs);
 
                 // Ignore the ...</roblox>
 
                 // Create RobloxDocument object
                 var document = new RobloxDocument();
-                var serializer = new RobloxSerializer(document);
-                var instances = new List<Instance>(objectCount);
-                var propertyCollections = new List<PropertyCollection>();
-
-                // Create instances for described objects
-                foreach (var type in typeHeaders)
-                {
-                    for (var i = 0; i < type.InstanceCount; i++)
-                    {
-                        var instance = InstanceFactory.Create(type.Name, type.AdditionalData != null);
-                        var referent = type.Referents[i];
-                        document.ReferentProvider.Add(instance, referent);
-                        instances.Add(instance);
-
-                        var propertyCollection = new PropertyCollection();
-                        var propertyDataBlockList = propertyData[type.TypeId];
-                        foreach (var propertyBlock in propertyDataBlockList)
-                            propertyCollection.Add(propertyBlock.GetProperty(i));
-                        propertyCollections.Add(propertyCollection);
-                    }
-                }
-
-                // Set properties
-                for (var i = 0; i < instances.Count; i++)
-                {
-                    var instance = instances[i];
-                    serializer.SetProperties(document, instance, propertyCollections[i]);
-                }
-
-                // Set parents
-                foreach (var pair in childParentPairs)
-                {
-                    var child = document.ReferentProvider.GetCached(pair.Item1);
-                    if (pair.Item2 == -1) // No parent
-                    {
-                        document.Children.Add(child);
-                    }
-                    else
-                    {
-                        var parent = document.ReferentProvider.GetCached(pair.Item2);
-                        child.Parent = parent;
-                    }
-                }
-                
+                FillRobloxDocument(document, objectCount, typeHeaders, propertyData, childParentPairs);
                 return document;
             }
-                /*catch (Exception ex)
+            catch (Exception ex)
             {
                 throw new InvalidRobloxFileException("The specified Roblox file is corrupt or invalid.", ex);
-            }*/
-            finally
-            {
             }
         }
-
+        
         public static RobloxDocument FromFile(string filename)
         {
-            RawRobloxDocument rawDocument;
-            return FromFile(filename, out rawDocument);
-        }
-
-        public static RobloxDocument FromFile(string filename, out RawRobloxDocument rawDocument)
-        {
             var fileStream = new FileStream(filename, FileMode.Open);
-            var document = FromStream(fileStream, out rawDocument);
+            var document = FromStream(fileStream);
             fileStream.Close();
             return document;
         }
 
-        public static void ReadRaw(EndianAwareBinaryReader reader, out int typeCount, out int objectCount, out TypeHeader[] typeHeaders, out Dictionary<int, List<PropertyBlock>> propertyData, out Tuple<int, int>[] childParentPairs)
+        internal static void FillRobloxDocument(RobloxDocument document, int objectCount, TypeHeader[] typeHeaders,
+            Dictionary<int, List<PropertyBlock>> propertyData, Tuple<int, int>[] childParentPairs)
+        {
+            var serializer = new RobloxSerializer(document);
+            var instances = new List<Instance>(objectCount);
+            var propertyCollections = new List<PropertyCollection>();
+
+            // Create instances for described objects
+            foreach (var type in typeHeaders)
+            {
+                for (var i = 0; i < type.InstanceCount; i++)
+                {
+                    var instance = InstanceFactory.Create(type.Name, type.AdditionalData != null);
+                    var referent = type.Referents[i];
+                    document.ReferentProvider.Add(instance, referent);
+                    instances.Add(instance);
+
+                    var propertyCollection = new PropertyCollection();
+                    var propertyDataBlockList = propertyData[type.TypeId];
+                    foreach (var propertyBlock in propertyDataBlockList)
+                        propertyCollection.Add(propertyBlock.GetProperty(i));
+                    propertyCollections.Add(propertyCollection);
+                }
+            }
+
+            // Set properties
+            for (var i = 0; i < instances.Count; i++)
+            {
+                var instance = instances[i];
+                serializer.SetProperties(document, instance, propertyCollections[i]);
+            }
+
+            // Set parents
+            foreach (var pair in childParentPairs)
+            {
+                var child = document.ReferentProvider.GetCached(pair.Item1);
+                if (pair.Item2 == -1) // No parent
+                {
+                    document.Children.Add(child);
+                }
+                else
+                {
+                    var parent = document.ReferentProvider.GetCached(pair.Item2);
+                    child.Parent = parent;
+                }
+            }
+        }
+
+        internal static void ReadRaw(EndianAwareBinaryReader reader, out int typeCount, out int objectCount, out TypeHeader[] typeHeaders, out Dictionary<int, List<PropertyBlock>> propertyData, out Tuple<int, int>[] childParentPairs)
         {
             // Check file signature
             var signatureBytes = reader.ReadBytes(Signatures.Signature.Length);

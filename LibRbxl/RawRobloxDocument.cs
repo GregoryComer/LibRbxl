@@ -8,7 +8,7 @@ using LibRbxl.Internal;
 
 namespace LibRbxl
 {
-    public class RawRobloxDocument
+    public class RawRobloxDocument : RobloxDocument
     {
         public int ObjectCount { get; }
         public int TypeCount { get; }
@@ -25,7 +25,7 @@ namespace LibRbxl
             ChildParentPairs = childParentPairs;
         }
 
-        public static RawRobloxDocument FromFile(string filename)
+        public new static RawRobloxDocument FromFile(string filename)
         {
             var fileStream = new FileStream(filename, FileMode.Open);
             var document = FromStream(fileStream);
@@ -33,18 +33,33 @@ namespace LibRbxl
             return document;
         }
 
-        public static RawRobloxDocument FromStream(Stream stream)
+        public new static RawRobloxDocument FromStream(Stream stream)
         {
-            var reader = new EndianAwareBinaryReader(stream);
+            try
+            {
+                var reader = new EndianAwareBinaryReader(stream);
 
-            int typeCount;
-            int objectCount;
-            TypeHeader[] typeHeaders;
-            Dictionary<int, List<PropertyBlock>> propertyData;
-            Tuple<int, int>[] childParentPairs;
-            RobloxDocument.ReadRaw(reader, out typeCount, out objectCount, out typeHeaders, out propertyData, out childParentPairs);
+                int typeCount;
+                int objectCount;
+                TypeHeader[] typeHeaders;
+                Dictionary<int, List<PropertyBlock>> propertyData;
+                Tuple<int, int>[] childParentPairs;
+                ReadRaw(reader, out typeCount, out objectCount, out typeHeaders, out propertyData, out childParentPairs);
+                
+                // Ignore the ...</roblox>
 
-            return new RawRobloxDocument(objectCount, typeCount, typeHeaders, propertyData, childParentPairs);
+                // Create RobloxDocument object
+                var document = new RawRobloxDocument(objectCount, typeCount, typeHeaders, propertyData, childParentPairs);
+                FillRobloxDocument(document, objectCount, typeHeaders, propertyData, childParentPairs);
+                return document;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidRobloxFileException("The specified Roblox file is corrupt or invalid.", ex);
+            }
+            finally
+            {
+            }
         }
     }
 }
