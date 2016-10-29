@@ -1,4 +1,4 @@
-﻿namespace LibRbxl.Instances
+﻿namespace LibRbxl.Internal
 {
     public class DoubleProperty : Property<double>
     {

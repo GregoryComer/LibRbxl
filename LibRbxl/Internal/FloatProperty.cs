@@ -1,4 +1,4 @@
-﻿namespace LibRbxl.Instances
+﻿namespace LibRbxl.Internal
 {
     public class FloatProperty : Property<float>
     {

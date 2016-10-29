@@ -1,4 +1,6 @@
-﻿namespace LibRbxl.Instances
+﻿using LibRbxl.Instances;
+
+namespace LibRbxl.Internal
 {
     public class Vector2Property : Property<Vector2>
     {

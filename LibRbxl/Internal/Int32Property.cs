@@ -1,4 +1,4 @@
-﻿namespace LibRbxl.Instances
+﻿namespace LibRbxl.Internal
 {
     public class Int32Property : Property<int>
     {

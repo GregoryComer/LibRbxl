@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LibRbxl.Instances;
+﻿using LibRbxl.Instances;
 
-namespace LibRbxl
+namespace LibRbxl.Internal
 {
     public class NumberSequenceProperty : Property<NumberSequence>
     {
